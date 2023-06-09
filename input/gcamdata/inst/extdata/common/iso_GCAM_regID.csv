@@ -42,7 +42,7 @@ caf,Central African Republic,Africa,5
 can,Canada,Canada,8
 cck,Cocos (Keeling) Islands,Southeast Asia,29
 che,Switzerland,Western Europe,16
-chi,Channel Islands,Western Europe,13
+chi,Channel Islands,Western Europe,16
 chl,Chile,Latin America,26
 chn,China,China,11
 civ,Cote dIvoire,Africa,5
@@ -75,16 +75,16 @@ est,Estonia,Former Soviet Union,12
 eth,Ethiopia,Africa,2
 fin,Finland,Western Europe,13
 fji,Fiji,Southeast Asia,29
-flk,Falkland Islands (Malvinas),Latin America,13
+flk,Falkland Islands (Malvinas),Latin America,16
 fra,France,Western Europe,13
 fro,Faroe Islands,Western Europe,13
 fsm,"Micronesia, Federated States of",Southeast Asia,29
 gab,Gabon,Africa,5
-gbr,United Kingdom,Western Europe,13
+gbr,United Kingdom,Western Europe,16
 geo,Georgia,Former Soviet Union,10
-ggy,Guernsey,Western Europe,13
+ggy,Guernsey,Western Europe,16
 gha,Ghana,Africa,5
-gib,Gibraltar,Western Europe,13
+gib,Gibraltar,Western Europe,16
 gin,Guinea,Africa,5
 glp,Guadeloupe,Latin America,9
 gmb,Gambia,Africa,5
@@ -99,11 +99,11 @@ gum,Guam,Southeast Asia,29
 guy,Guyana,Latin America,25
 hkg,Hong Kong,Southeast Asia,11
 hnd,Honduras,Latin America,9
-hrv,Croatia,Eastern Europe,15
+hrv,Croatia,Eastern Europe,12
 hti,Haiti,Latin America,9
 hun,Hungary,Eastern Europe,12
 idn,Indonesia,Southeast Asia,18
-imn,Isle of Man,Western Europe,13
+imn,Isle of Man,Western Europe,16
 ind,India,India,17
 irl,Ireland,Western Europe,13
 irn,"Iran, Islamic Republic of",Middle East,21
@@ -112,7 +112,7 @@ isl,Iceland,Western Europe,16
 isr,Israel,Middle East,21
 ita,Italy,Western Europe,13
 jam,Jamaica,Latin America,9
-jey,Jersey,Western Europe,13
+jey,Jersey,Western Europe,16
 jor,Jordan,Middle East,21
 jpn,Japan,Japan,19
 kaz,Kazakhstan,Former Soviet Union,10
@@ -196,7 +196,7 @@ scg,Serbia and Montenegro,Eastern Europe,15
 sdn,Sudan,Africa,2
 sen,Senegal,Africa,5
 sgp,Singapore,Southeast Asia,29
-shn,Saint Helena,Africa,13
+shn,Saint Helena,Africa,16
 sjm,Svalbard and Jan Mayen Islands,Western Europe,16
 slb,Solomon Islands,Southeast Asia,29
 sle,Sierra Leone,Africa,5
@@ -214,7 +214,7 @@ swe,Sweden,Western Europe,13
 swz,Swaziland,Africa,4
 syc,Seychelles,Africa,29
 syr,Syrian Arab Republic,Middle East,21
-tca,Turks and Caicos,Latin America,13
+tca,Turks and Caicos,Latin America,16
 tcd,Chad,Africa,5
 tgo,Togo,Africa,5
 tha,Thailand,Southeast Asia,29
@@ -237,7 +237,7 @@ uzb,Uzbekistan,Former Soviet Union,10
 vat,Vatican,Western Europe,13
 vct,Saint Vincent and the Grenadines,Latin America,9
 ven,Venezuela,Latin America,25
-vgb,"Virgin Islands, British",Latin America,13
+vgb,"Virgin Islands, British",Latin America,16
 vir,"Virgin Islands, U.S.",Latin America,1
 vnm,Viet Nam,China,29
 vut,Vanuatu,Southeast Asia,29

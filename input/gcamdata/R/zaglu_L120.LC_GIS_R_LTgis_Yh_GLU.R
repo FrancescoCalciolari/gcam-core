@@ -300,6 +300,20 @@ module_aglu_L120.LC_GIS_R_LTgis_Yh_GLU <- function(command, ...) {
       mutate(year = as.integer(year)) ->
       L120.LC_bm2_R_LT_Yh_GLU
 
+    # Splitting managed forest for GLU024 (ireland/northern ireland) based on forest split
+    L123.LC_bm2_R_MgdFor_Yh_GLU_beforeadjust_GLU024 <- L123.LC_bm2_R_MgdFor_Yh_GLU_beforeadjust %>%
+      filter(GLU == "GLU024") %>%
+      left_join(L120.LC_bm2_R_LT_Yh_GLU, by = c("Land_Type", "GLU", "year")) %>%
+      group_by(Land_Type, GLU, year) %>%
+      mutate(share = value / sum(value)) %>%
+      ungroup %>%
+      mutate(MgdFor = MgdFor * share) %>%
+      select(GCAM_region_ID = GCAM_region_ID.y, Land_Type, GLU, year, MgdFor)
+
+    L123.LC_bm2_R_MgdFor_Yh_GLU_beforeadjust <- L123.LC_bm2_R_MgdFor_Yh_GLU_beforeadjust %>%
+      filter(GLU != "GLU024") %>%
+      bind_rows(L123.LC_bm2_R_MgdFor_Yh_GLU_beforeadjust_GLU024)
+
     # scale forest to avoid negative unmanaged forest area which caused issue for yield in Pakistan and African regions
     # L123.LC_bm2_R_MgdFor_Yh_GLU_beforeadjust, pulled from L123.LC_bm2_R_MgdFor_Yh_GLU before managed forest scaling, was used here.
     L120.LC_bm2_R_LT_Yh_GLU %>%
