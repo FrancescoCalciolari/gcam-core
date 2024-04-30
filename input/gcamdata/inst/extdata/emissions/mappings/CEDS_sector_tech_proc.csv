@@ -118,6 +118,9 @@ industry_energy,gas,gas,industrial energy use,gas,gas,industry_energy,gas,indust
 industry_energy,refined liquids,refined liquids,industrial energy use,refined liquids,refined liquids,industry_energy,refined liquids,industry_energy,refined liquids,refined liquids,industry_energy,ind,industry_energy,refined liquids,,ind_oil
 Legumes,,,Legumes,,,,,,,,,,,,Cropland Management,
 MiscCrop,,,MiscCrop,,,,,,,,,,,,Cropland Management,
+Coffee,,,Coffee,,,,,,,,,,,,Cropland Management,
+Cocoa,,,Cocoa,,,,,,,,,,,,Cropland Management,
+Rubber,,,Rubber,,,,,,,,,,,,Cropland Management,
 NutsSeeds,,,NutsSeeds,,,,,,,,,,,,Cropland Management,
 N fertilizer,coal,coal,N fertilizer,coal,coal,industry_energy,coal,industry_energy,coal,coal,industry_energy,ind,industry_energy,coal,,
 N fertilizer,gas,gas,N fertilizer,gas,gas,industry_energy,gas,industry_energy,gas,gas,industry_energy,ind,industry_energy,gas,,

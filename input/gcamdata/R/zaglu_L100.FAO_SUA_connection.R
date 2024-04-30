@@ -260,7 +260,7 @@ module_aglu_L100.FAO_SUA_connection <- function(command, ...) {
 
 
     DF_Macronutrient_FoodItem4 <-
-      L100.FAO_SUA_APE_balance %>% filter(element == "Food") %>%
+      L100.FAO_SUA_APE_balance %>% filter(element == "Food" & GCAM_commodity != "Rubber") %>%
       rename(Mt = value) %>%
       left_join_error_no_match(DF_Macronutrient_FoodItem3_calperg,
                                by = c("GCAM_commodity", "GCAM_region_ID")) %>%

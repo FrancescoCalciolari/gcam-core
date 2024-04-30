@@ -63,6 +63,15 @@ module_aglu_L100.FAO_SUA_PrimaryEquivalent <- function(command, ...) {
     All_Bal_element <- levels(GCAMDATA_FAOSTAT_SUA_195Regs_530Items_2010to2019$element)
     All_Bal_element <- factor(All_Bal_element, levels = All_Bal_element)
 
+    ##ADDITION
+    #ADDING O.01 in Pakistan import of cocoa and coffee
+    GCAMDATA_FAOSTAT_FBSH_CB_173Regs_118Items_1973to2009 <- GCAMDATA_FAOSTAT_FBSH_CB_173Regs_118Items_1973to2009 %>%
+      mutate(across("1973":"2009", ~ ifelse((item_code == 2630 | item_code == 2633) &
+                                          area_code == 165 &
+                                          element %in% c("Import","Export","Food"),
+                                        . + 0.01,
+                                        .)))
+
     # Section1: [2010-2019] Region aggregation of supply-utilization-accounting data ----
 
     # Note: the volume of data in this processing is quite large.  Therefore we took

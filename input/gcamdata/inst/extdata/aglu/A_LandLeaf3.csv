@@ -18,6 +18,9 @@ AgroForestLand,AgroForest_NonPasture,CropLand,FruitsTree
 AgroForestLand,AgroForest_NonPasture,CropLand,Legumes
 AgroForestLand,AgroForest_NonPasture,CropLand,MiscCrop
 AgroForestLand,AgroForest_NonPasture,CropLand,MiscCropTree
+AgroForestLand,AgroForest_NonPasture,CropLand,Coffee
+AgroForestLand,AgroForest_NonPasture,CropLand,Cocoa
+AgroForestLand,AgroForest_NonPasture,CropLand,Rubber
 AgroForestLand,AgroForest_NonPasture,CropLand,NutsSeeds
 AgroForestLand,AgroForest_NonPasture,CropLand,NutsSeedsTree
 AgroForestLand,AgroForest_NonPasture,CropLand,OilCrop

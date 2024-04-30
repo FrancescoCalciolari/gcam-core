@@ -283,13 +283,13 @@ Fruits,FruitsNES,3,TRUE,"Mangoes, mangosteens, guavas","Juice, mango",,"Fruits, 
 Fruits,FruitsNES,4,TRUE,Plums and sloes,Plums dried (prunes),,"Fruits, Other and products",0.249143466,0.193750393,TRUE
 Fruits,FruitsNES,4,TRUE,Plums and sloes,"Juice, plum, single strength",,"Fruits, Other and products",0.249143466,0.193750393,TRUE
 Fruits,FruitsNES,4,TRUE,Plums and sloes,"Juice, plum, concentrated",,"Fruits, Other and products",0.249143466,0.193750393,TRUE
-MiscCrop,"Coffee, green",1,TRUE,"Coffee, green","Coffee, roasted",,Coffee and products,0.38000016,0.651764179,TRUE
-MiscCrop,"Coffee, green",1,TRUE,"Coffee, green","Coffee, extracts",,Coffee and products,0.38000016,0.651764179,TRUE
-MiscCrop,"Cocoa, beans",1,TRUE,"Cocoa, beans","Cocoa, paste",,Cocoa Beans and products,0.799978398,0.799828386,FALSE
-MiscCrop,"Cocoa, beans",2,FALSE,"Cocoa, paste","Cocoa, butter",,Cocoa Beans and products,0.99993497,1.015388297,FALSE
-MiscCrop,"Cocoa, beans",2,FALSE,"Cocoa, paste","Cocoa, powder & cake",,Cocoa Beans and products,0.99993497,1.015388297,FALSE
-MiscCrop,"Cocoa, beans",3,FALSE,"Cocoa, butter",Chocolate products nes,,Cocoa Beans and products,4.697977987,4.454539454,FALSE
-MiscCrop,"Cocoa, beans",3,FALSE,"Cocoa, powder & cake",Chocolate products nes,,Cocoa Beans and products,4.697977987,4.454539454,FALSE
+Coffee,"Coffee, green",1,TRUE,"Coffee, green","Coffee, roasted",,Coffee and products,0.38000016,0.651764179,TRUE
+Coffee,"Coffee, green",1,TRUE,"Coffee, green","Coffee, extracts",,Coffee and products,0.38000016,0.651764179,TRUE
+Cocoa,"Cocoa, beans",1,TRUE,"Cocoa, beans","Cocoa, paste",,Cocoa Beans and products,0.799978398,0.799828386,FALSE
+Cocoa,"Cocoa, beans",2,FALSE,"Cocoa, paste","Cocoa, butter",,Cocoa Beans and products,0.99993497,1.015388297,FALSE
+Cocoa,"Cocoa, beans",2,FALSE,"Cocoa, paste","Cocoa, powder & cake",,Cocoa Beans and products,0.99993497,1.015388297,FALSE
+Cocoa,"Cocoa, beans",3,FALSE,"Cocoa, butter",Chocolate products nes,,Cocoa Beans and products,4.697977987,4.454539454,FALSE
+Cocoa,"Cocoa, beans",3,FALSE,"Cocoa, powder & cake",Chocolate products nes,,Cocoa Beans and products,4.697977987,4.454539454,FALSE
 MiscCrop,MiscCropNES,0,TRUE,Tea,Tea,,Tea (including mate) and products,,,
 MiscCrop,MiscCropNES,0,TRUE,Mate,Mate,,Tea (including mate) and products,,,
 MiscCrop,MiscCropNES,0,TRUE,Pepper (piper spp.),Pepper (piper spp.),,Pepper and products,,,
@@ -303,7 +303,7 @@ MiscCrop,MiscCropNES,0,TRUE,Spices nes,Spices nes,,"Spices, Other and products",
 MiscCrop,MiscCropNES,0,TRUE,Peppermint,Peppermint,,QCL,,,
 MiscCrop,MiscCropNES,0,TRUE,Hops,Hops,,QCL,,,
 MiscCrop,MiscCropNES,0,TRUE,"Tobacco, unmanufactured","Tobacco, unmanufactured",,QCL,,,
-MiscCrop,MiscCropNES,0,TRUE,"Rubber, natural","Rubber, natural",,QCL,,,
+Rubber,"Rubber, natural",0,TRUE,"Rubber, natural","Rubber, natural",,QCL,,,
 MiscCrop,MiscCropNES,0,TRUE,"Pyrethrum, dried","Pyrethrum, dried",,QCL,,,
 Beef,BeefAnMeatEq,0,FALSE,"AnMeatEq, cattle","AnMeatEq, cattle",,QCL,,,
 Beef,BeefAnMeatEq,0,FALSE,"AnMeatEq, buffalo","AnMeatEq, buffalo",,QCL,,,

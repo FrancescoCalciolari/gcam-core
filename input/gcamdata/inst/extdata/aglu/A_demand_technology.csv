@@ -11,6 +11,8 @@ FoodDemand_NonStaples,FiberCrop,FiberCrop,FiberCrop,share-weight,final-calibrati
 FoodDemand_NonStaples,FruitsVeg,Fruits,Fruits,share-weight,final-calibration-year,end-year,fixed,regional fruits,1
 FoodDemand_NonStaples,Protein,Plant,Legumes,share-weight,final-calibration-year,end-year,fixed,regional legumes,1
 FoodDemand_NonStaples,MiscCrop,MiscCrop,MiscCrop,share-weight,final-calibration-year,end-year,fixed,regional misccrop,1
+FoodDemand_NonStaples,MiscCrop,Coffee,Coffee,share-weight,final-calibration-year,end-year,fixed,regional coffee,1
+FoodDemand_NonStaples,MiscCrop,Cocoa,Cocoa,share-weight,final-calibration-year,end-year,fixed,regional cocoa,1
 FoodDemand_NonStaples,Protein,Plant,NutsSeeds,share-weight,final-calibration-year,end-year,fixed,regional nuts_seeds,1
 FoodDemand_NonStaples,Oil,OilCrop,OilCrop,share-weight,final-calibration-year,end-year,fixed,regional oilcrop,1
 FoodDemand_NonStaples,Oil,Soybean,Soybean,share-weight,final-calibration-year,end-year,fixed,regional soybean,1
@@ -34,6 +36,9 @@ NonFoodDemand_Crops,FodderHerb,FodderHerb,FodderHerb,share-weight,final-calibrat
 NonFoodDemand_Crops,Fruits,Fruits,Fruits,share-weight,final-calibration-year,end-year,fixed,regional fruits,1
 NonFoodDemand_Crops,Legumes,Legumes,Legumes,share-weight,final-calibration-year,end-year,fixed,regional legumes,1
 NonFoodDemand_Crops,MiscCrop,MiscCrop,MiscCrop,share-weight,final-calibration-year,end-year,fixed,regional misccrop,1
+NonFoodDemand_Crops,Coffee,Coffee,Coffee,share-weight,final-calibration-year,end-year,fixed,regional coffee,1
+NonFoodDemand_Crops,Cocoa,Cocoa,Cocoa,share-weight,final-calibration-year,end-year,fixed,regional cocoa,1
+NonFoodDemand_Crops,Rubber,Rubber,Rubber,share-weight,final-calibration-year,end-year,fixed,regional rubber,1
 NonFoodDemand_Crops,NutsSeeds,NutsSeeds,NutsSeeds,share-weight,final-calibration-year,end-year,fixed,regional nuts_seeds,1
 NonFoodDemand_Crops,OilCrop,OilCrop,OilCrop,share-weight,final-calibration-year,end-year,fixed,regional oilcrop,1
 NonFoodDemand_Crops,OtherGrain,OtherGrain,OtherGrain,share-weight,final-calibration-year,end-year,fixed,regional othergrain,1

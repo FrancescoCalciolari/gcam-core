@@ -118,26 +118,26 @@ module_aglu_L109.ag_an_ALL_R_C_Y <- function(command, ...) {
   # Assign negative other net uses to imports, and adjust global trade to maintain balances
   # Changes in global net exports are apportioned among regions with positive other uses, according to regional shares
 
-  if(any(L109.ag_ALL_Mt_R_C_Y$OtherUses_Mt < 0)){
-  # Filter commodities that may be imbalanced
-  L109.ag_ALL_Mt_R_C_Y %>%
-    filter(GCAM_commodity %in% Primary_commodities) %>%
-    filter(GCAM_commodity != "FodderHerb") %>%
-    mutate(negOther = if_else(OtherUses_Mt < 0, "Neg", "Pos") ) ->
-    L109.ag_ALL_Mt_R_C_Y_1
+    if(any(L109.ag_ALL_Mt_R_C_Y$OtherUses_Mt < 0)){
+      # Filter commodities that may be imbalanced
+      L109.ag_ALL_Mt_R_C_Y %>%
+        filter(GCAM_commodity %in% Primary_commodities) %>%
+        filter(GCAM_commodity != "FodderHerb") %>%
+        mutate(negOther = if_else(OtherUses_Mt < 0, "Neg", "Pos") ) ->
+        L109.ag_ALL_Mt_R_C_Y_1
 
-    L109.ag_ALL_Mt_R_C_Y_1 %>%
-      filter(year %in% MODEL_BASE_YEARS) %>%
-      group_by(GCAM_commodity, year, negOther) %>%
-      summarise(value = sum(OtherUses_Mt), .groups = "drop") %>%
-      spread(negOther, value) %>%
-      filter(!is.na(Neg), Neg + Pos < 0) %>% nrow() == 0 ->
-      AG_OTHERUSE_WARNING
+       L109.ag_ALL_Mt_R_C_Y_1 %>%
+         filter(year %in% MODEL_BASE_YEARS) %>%
+         group_by(GCAM_commodity, year, negOther) %>%
+         summarise(value = sum(OtherUses_Mt), .groups = "drop") %>%
+         spread(negOther, value) %>%
+         filter(!is.na(Neg), Neg + Pos < 0) %>% nrow() == 0 ->
+         AG_OTHERUSE_WARNING
 
-    if (AG_OTHERUSE_WARNING == F) {
-      warning("Negative other use in model base years.
-      Other use in ag crop commodities may require a case-by-case adjustment (in food) since total global other use is negative.
-      Please check food consumption adjustments.") }
+       if (AG_OTHERUSE_WARNING == F) {
+         warning("Negative other use in model base years.
+       Other use in ag crop commodities may require a case-by-case adjustment (in food) since total global other use is negative.
+       Please check food consumption adjustments.") }
 
   ### Ship negative otheruse to other regions with positives ----
   # positive regions will be scaled down simply
@@ -255,9 +255,9 @@ module_aglu_L109.ag_an_ALL_R_C_Y <- function(command, ...) {
         An_OTHERUSE_WARNING
 
       # comment this out since adjustments are added later
-      # if (An_OTHERUSE_WARNING == F) {
-      #  warning("Negative other use in model base years.Other use in meat commodities may require a case-by-case adjustment (in food) since total global other use is negative. Please check food consumption adjustments.")
-      #   }
+      if (An_OTHERUSE_WARNING == F) {
+       warning("Negative other use in model base years.Other use in meat commodities may require a case-by-case adjustment (in food) since total global other use is negative. Please check food consumption adjustments.")
+        }
 
       # Ship negative otheruse to other regions with positives
       # positive regions will be scaled down simplely

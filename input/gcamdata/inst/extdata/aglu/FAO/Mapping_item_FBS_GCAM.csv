@@ -36,13 +36,13 @@ Fruits,2616,Plantains
 Legumes,2549,"Pulses, Other and products"
 Legumes,2546,Beans
 Legumes,2547,Peas
-MiscCrop,2630,Coffee and products
-MiscCrop,2633,Cocoa Beans and products
+Coffee,2630,Coffee and products
+Cocoa,2633,Cocoa Beans and products
 MiscCrop,2635,Tea (including mate)
 MiscCrop,2640,Pepper
 MiscCrop,2645,"Spices, Other"
 MiscCrop,2642,Cloves
-MiscCrop,2672,Rubber
+Rubber,2672,Rubber
 MiscCrop,2671,Tobacco
 NutsSeeds,2552,Groundnuts
 NutsSeeds,2572,Groundnut Oil

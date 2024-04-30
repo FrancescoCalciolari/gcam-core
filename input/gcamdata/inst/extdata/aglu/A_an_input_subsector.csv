@@ -14,6 +14,8 @@ FeedCrops,FiberCrop,-6,start-year,1,share-weight,final-calibration-year,end-year
 FeedCrops,Fruits,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,
 FeedCrops,Legumes,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,
 FeedCrops,MiscCrop,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,
+FeedCrops,Coffee,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,
+FeedCrops,Cocoa,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,
 FeedCrops,NutsSeeds,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,
 FeedCrops,OilCrop,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,
 FeedCrops,OtherGrain,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,

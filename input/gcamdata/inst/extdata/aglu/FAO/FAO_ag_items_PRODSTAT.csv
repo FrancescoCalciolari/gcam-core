@@ -54,9 +54,9 @@ Chicory roots,459,TRUE,ChicoryRoots,Vegetables,Vegetables,,,,Other,Others (annua
 Cinnamon (cannella),693,TRUE,CnnmnCnlla,MiscCrop,MiscCropTree,,,,Other,Others (perennial) ,Crop24,Cinnamon.canella.,,Spices other,,ocr,,Tree
 Clover for forage and silage,640,FALSE,Clovr4FrgSlg,FodderHerb,FodderHerb,,,Clover,Other,Fodder crops,Crop25,,,Peas,"Peas, green",ocr,Nfix,Tree
 Cloves,698,TRUE,cloves,MiscCrop,MiscCropTree,,,,Other,Others (perennial) ,Crop24,Cloves,,Cloves,,ocr,,Tree
-"Cocoa, beans",661,TRUE,CocoaBeans,MiscCrop,MiscCropTree,COCO,28,Cocoa,Other,Cocoa,Crop22,,,Cocoa Beans,,ocr,,
+"Cocoa, beans",661,TRUE,CocoaBeans,Cocoa,Cocoa,COCO,28,Cocoa,Other,Cocoa,Crop22,,,Cocoa Beans,,ocr,,
 Coconuts,249,TRUE,Coconuts,OilCrop,OilCropTree,COCN,27,Coconut,FruitsAndVeg,Others (perennial) ,Crop24,Coconuts,Coconuts,Coconuts,,osd,,Tree
-"Coffee, green",656,TRUE,CoffeeGreen,MiscCrop,MiscCropTree,COFF,29,Coffee,Other,Coffee,Crop23,,Coffee,Coffee,,ocr,,
+"Coffee, green",656,TRUE,CoffeeGreen,Coffee,Coffee,COFF,29,Coffee,Other,Coffee,Crop23,,Coffee,Coffee,,ocr,,
 "Cow peas, dry",195,TRUE,CowPeasDry,Legumes,Legumes,PULS,15,,Other,Pulses,Crop17,,,Pulses other,,,Nfix,Tree
 Cranberries,554,TRUE,Cranberries,Fruits,Fruits,FRUI,19,Cranberry,FruitsAndVeg,Others (perennial) ,Crop24,Cranberries,,Fruits other,,v_f,,Tree
 Cucumbers and gherkins,397,TRUE,Ccmbr_Ghrkn,Vegetables,Vegetables,VEGE,16,Cucumber,FruitsAndVeg,Others (annual),Crop26,Cucumbersandgherkins,,Vegetables other,,v_f,,Tree
@@ -147,7 +147,7 @@ Rapeseed,270,TRUE,Rapeseed,OilCrop,OilCrop,RAPE,21,Rapeseed,OtherOilSeeds,Rapese
 Raspberries,547,TRUE,Raspberries,Fruits,Fruits,FRUI,19,Raspberry,FruitsAndVeg,Others (perennial) ,Crop24,Raspberries,,Fruits other,,v_f,,
 "Rice, paddy",27,TRUE,PaddyRice,Rice,Rice,RICE,2,Rice,Rice,Rice,Crop3,,Rice,Rice,,pdr,,
 Roots and tubers nes,149,TRUE,Root_TbrNES,RootTuber,RootTuber,OTHR,11,Roots & tubers,Other,Others (annual),Crop26,Rootsandtubersnes,,Roots other,,,,
-"Rubber, natural",836,TRUE,NatRubber,MiscCrop,MiscCropTree,,,,,Others (perennial) ,Crop24,Naturalrubber,,,,,,
+"Rubber, natural",836,TRUE,NatRubber,Rubber,Rubber,,,,,Others (perennial) ,Crop24,Naturalrubber,,,,,,
 Rye,71,TRUE,Rye,OtherGrain,OtherGrain,OTHC,7,Rye,OtherCoarseGrains,Rye,Crop5,,,Rye,,gro,,
 Rye grass for forage & silage,638,FALSE,RyeGrsFrgSlg,FodderGrass,FodderGrass,OTHC,7,,Other,Rye,Crop5,,,Rye,Rye,,,
 Safflower seed,280,TRUE,SfflwrSeed,OilCrop,OilCrop,OILC,20,Safflower,OtherOilSeeds,Others (annual),Crop26,Safflowerseed,,Oilcrops other,,osd,,

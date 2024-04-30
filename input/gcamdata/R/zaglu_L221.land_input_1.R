@@ -43,35 +43,47 @@ module_aglu_L221.land_input_1 <- function(command, ...) {
       FILE = "aglu/A_LandLeaf_Unmgd1",
       FILE = "aglu/A_LT_Mapping",
       FILE = "aglu/A_soil_time_scale_R",
+      FILE = "aglu/GCAMLandProfit",
       "L121.CarbonContent_kgm2_R_LT_GLU",
       "L125.LC_bm2_R_LT_Yh_GLU",
       "L125.LC_bm2_R",
       "L131.LV_USD75_m2_R_GLU",
       "L120.LC_soil_veg_carbon_GLU")
 
-  MODULE_OUTPUTS <-
-    c("L221.LN0_Logit",
-      "L221.LN0_Land",
-      "L221.LN0_SoilTimeScale",
-      "L221.LN1_ValueLogit",
-      "L221.LN1_HistUnmgdAllocation",
-      "L221.LN1_UnmgdAllocation",
-      "L221.LN1_UnmgdCarbon")
-
   if(command == driver.DECLARE_INPUTS) {
     return(MODULE_INPUTS)
   } else if(command == driver.DECLARE_OUTPUTS) {
-    return(MODULE_OUTPUTS)
+    return(c("L221.LN0_Logit",
+             "L221.LN0_Land",
+             "L221.LN0_SoilTimeScale",
+             "L221.LN1_ValueLogit",
+             "L221.LN1_HistUnmgdAllocation",
+             "L221.LN1_UnmgdAllocation",
+             "L221.LN1_UnmgdCarbon"))
   } else if(command == driver.MAKE) {
 
     all_data <- list(...)[[1]]
 
-    # Load required inputs ----
-    get_data_list(all_data,
-                  MODULE_INPUTS[!MODULE_INPUTS %in% c("L120.LC_soil_veg_carbon_GLU",
-                                                       "L121.CarbonContent_kgm2_R_LT_GLU")],
-                          strip_attributes = TRUE)
+    # silence package check notes
+    GCAM_commodity <- GCAM_region_ID <- region <- value <- year <- GLU <- GLU_name <- GLU_code <-
+      LandLeaf <- Land_Type <- LandNode <- LandNode1 <- LandNode2 <- LandNode3 <- UnmanagedLandLeaf <-
+      logit.year.fillout <- logit.exponent <- logit.type <- soilTimeScale <- `mature age` <- mature.age <-
+      soil_c <- veg_c <- LC_bm2 <- LV_milUSD75 <- LV_USD75_bm2 <- LV_USD75_m2 <- HarvCropLand_bm2 <-
+      unManagedLandValue <- LandAllocatorRoot <- hist.veg.carbon.density <- hist.soil.carbon.density <-
+      veg.carbon.density <- soil.carbon.density <- allocation <- Land_Type.y <- mature.age.year.fillout <-
+      min.veg.carbon.density <- min.soil.carbon.density <- . <- NULL
 
+    # Load required inputs
+
+    lapply(setdiff(MODULE_INPUTS,
+                   c("L120.LC_soil_veg_carbon_GLU",
+                     "L121.CarbonContent_kgm2_R_LT_GLU")),
+           function(d){
+      # get name as the char after last /
+      nm <- tail(strsplit(d, "/")[[1]], n = 1)
+      # get data and assign
+      assign(nm, get_data(all_data, d, strip_attributes = T),
+             envir = parent.env(environment()))  })
 
     # If the carbon data source is set to moirai, use the spatially distinct carbon values. If not, use the Houghton values.
     if(aglu.CARBON_DATA_SOURCE =="moirai"){
@@ -83,14 +95,7 @@ module_aglu_L221.land_input_1 <- function(command, ...) {
     }
 
 
-    # silence package check notes
-    GCAM_commodity <- GCAM_region_ID <- region <- value <- year <- GLU <- GLU_name <- GLU_code <-
-      LandLeaf <- Land_Type <- LandNode <- LandNode1 <- LandNode2 <- LandNode3 <- UnmanagedLandLeaf <-
-      logit.year.fillout <- logit.exponent <- logit.type <- soilTimeScale <- `mature age` <- mature.age <-
-      soil_c <- veg_c <- LC_bm2 <- LV_milUSD75 <- LV_USD75_bm2 <- LV_USD75_m2 <- HarvCropLand_bm2 <-
-      unManagedLandValue <- LandAllocatorRoot <- hist.veg.carbon.density <- hist.soil.carbon.density <-
-      veg.carbon.density <- soil.carbon.density <- allocation <- Land_Type.y <- mature.age.year.fillout <-
-      min.veg.carbon.density <- min.soil.carbon.density <- . <- NULL
+
 
 
     # 1. Process inputs ----
@@ -135,7 +140,8 @@ module_aglu_L221.land_input_1 <- function(command, ...) {
     # Get a regional median value to fill in zero or NA later ----
     # Previously min value was used which could underestimate the marginal land conversion cost
 
-    # One motivation of this change was to fix the Southeast Asia Hong basin issue
+    # One motivation of this change was to fixe the Southeast Asia Hong basin issue
+    # (land price way too low pointed out by Agigail Birnbaum, Jon Lamontagne, etc.)
     # Note that the data source and the method for generating
     # unmanaged land rental profit should be revisited (XZ)
     L131.LV_USD75_bm2_R_GLU %>%
@@ -201,6 +207,70 @@ module_aglu_L221.land_input_1 <- function(command, ...) {
       select(region, LandAllocatorRoot, LandNode1, unManagedLandValue, logit.year.fillout, logit.exponent, logit.type) ->
       L221.LN1_ValueLogit
 
+    # Unmanaged land value compare & update ----
+
+    GCAMLandProfit %>%
+      mutate(Rent = Tkm2 * Rent_DollarPerTkm2) %>%
+      separate(col = LandLeaf,
+               into = c("commodity", "basin", "irr", "fert"), fill = "right",
+               sep = "_") %>%
+      filter(grepl("Unmanaged|Protected|Urban|Rock|Tundra|biomass|Grass|Shrub",
+                   commodity) == F) %>%
+      mutate(commodity = if_else(grepl(c("OtherArableLand|Forest|Pasture"), commodity),
+                                 commodity, "Cropland")) %>%
+      group_by(region, commodity, basin) %>%
+      summarise_at(vars(Tkm2, Rent), sum) %>% ungroup %>%
+      mutate(RentalRate = Rent / Tkm2) %>% filter(Tkm2 >0) ->
+      GCAM_Rental
+
+    L221.LN1_ValueLogit %>%
+      filter(grepl("AgroForestLand_", LandNode1)) %>%
+      transmute(region,
+                basin = gsub("AgroForestLand_", "", LandNode1),
+                commodity = "GTAP_mean",
+                RentalRate  = unManagedLandValue) ->
+      GTAP_Rental
+
+    GCAM_Rental %>%
+      filter(commodity != "OtherArableLand") %>%
+      group_by(region, basin) %>%
+      summarise_at(vars(Tkm2, Rent), sum) %>% ungroup %>%
+      mutate(RentalRate = Rent / Tkm2) %>%
+      mutate(commodity = "GCAM_mean") %>%
+      bind_rows(GCAM_Rental) %>%
+      select(-Rent, - Tkm2) %>%
+      bind_rows(GTAP_Rental) ->
+      Rental_compare
+
+    # Rental_compare %>%
+    #   mutate(RentalRate = RentalRate / 100000) %>%
+    #   dplyr::group_by_at(vars(commodity)) %>%
+    #   summarize(mean = mean(RentalRate),
+    #             Q05 = quantile(RentalRate, 0.05),
+    #             Q25 = quantile(RentalRate, 0.25),
+    #             median = median(RentalRate),
+    #             Q75 = quantile(RentalRate, 0.75),
+    #             Q95 = quantile(RentalRate, 0.95) ) %>%
+    #   readr::write_csv(file = "Rental_compare_stat1.csv")
+
+    L221.LN1_ValueLogit %>%
+      filter(grepl("AgroForestLand_", LandNode1)) %>%
+      mutate(basin = gsub("AgroForestLand_", "", LandNode1)) %>%
+      left_join(
+        Rental_compare %>% spread(commodity, RentalRate),
+        by = c("region", "basin")
+      )  %>%
+      # Use GCAM mean value and GTAP values to fill in NA
+      mutate(unManagedLandValue =
+               if_else(is.na(GCAM_mean),
+                       unManagedLandValue, GCAM_mean)) %>%
+      select(names(L221.LN1_ValueLogit)) %>%
+      bind_rows(
+        L221.LN1_ValueLogit %>%
+          filter(!grepl("AgroForestLand_", LandNode1)) ) ->
+      L221.LN1_ValueLogit
+
+
 
     # Land use history
     # Build a temporary table of Land Cover allocated for Unmanaged Land, and then split into different
@@ -243,7 +313,7 @@ module_aglu_L221.land_input_1 <- function(command, ...) {
     LEVEL2_DATA_NAMES$LN1_Delete
 
 
-    # 3. Produce outputs
+    # 3. Produce outputs ----
     L221.LN0_Logit %>%
       add_title("Logit exponent of the top-level (zero) land nest by region") %>%
       add_units("NA") %>%
@@ -325,7 +395,8 @@ module_aglu_L221.land_input_1 <- function(command, ...) {
                      "L131.LV_USD75_m2_R_GLU") ->
       L221.LN1_UnmgdCarbon
 
-    return_data(MODULE_OUTPUTS)
+    return_data(L221.LN0_Logit, L221.LN0_Land, L221.LN0_SoilTimeScale, L221.LN1_ValueLogit,
+                L221.LN1_HistUnmgdAllocation, L221.LN1_UnmgdAllocation, L221.LN1_UnmgdCarbon)
   } else {
     stop("Unknown command")
   }

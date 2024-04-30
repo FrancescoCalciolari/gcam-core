@@ -25,6 +25,9 @@ FruitsTree,Cropland
 Legumes,Cropland
 MiscCrop,Cropland
 MiscCropTree,Cropland
+Coffee,Cropland
+Cocoa,Cropland
+Rubber,Cropland
 NutsSeeds,Cropland
 NutsSeedsTree,Cropland
 OilCrop,Cropland

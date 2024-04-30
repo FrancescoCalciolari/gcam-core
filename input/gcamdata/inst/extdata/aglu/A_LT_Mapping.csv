@@ -19,6 +19,9 @@ AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,FruitsTree,Fruits,Fru
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,Legumes,Legumes,Legumes
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,MiscCrop,MiscCrop,MiscCrop
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,MiscCropTree,MiscCrop,MiscCropTree
+AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,Coffee,Coffee,Coffee
+AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,Cocoa,Cocoa,Cocoa
+AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,Rubber,Rubber,Rubber
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,NutsSeeds,NutsSeeds,NutsSeeds
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,NutsSeedsTree,NutsSeeds,NutsSeedsTree
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,OilCrop,OilCrop,OilCrop

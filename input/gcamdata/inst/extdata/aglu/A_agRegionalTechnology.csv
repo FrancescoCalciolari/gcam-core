@@ -16,6 +16,12 @@ regional legumes,domestic legumes,domestic legumes,Legumes,1,0,1,regional
 regional legumes,imported legumes,imported legumes,traded legumes,1,0,1,USA
 regional misccrop,domestic misccrop,domestic misccrop,MiscCrop,1,0,1,regional
 regional misccrop,imported misccrop,imported misccrop,traded misccrop,1,0,1,USA
+regional coffee,domestic coffee,domestic coffee,Coffee,1,0,1,regional
+regional coffee,imported coffee,imported coffee,traded coffee,1,0,1,USA
+regional cocoa,domestic cocoa,domestic cocoa,Cocoa,1,0,1,regional
+regional cocoa,imported cocoa,imported cocoa,traded cocoa,1,0,1,USA
+regional rubber,domestic rubber,domestic rubber,Rubber,1,0,1,regional
+regional rubber,imported rubber,imported rubber,traded rubber,1,0,1,USA
 regional nuts_seeds,domestic nuts_seeds,domestic nuts_seeds,NutsSeeds,1,0,1,regional
 regional nuts_seeds,imported nuts_seeds,imported nuts_seeds,traded nuts_seeds,1,0,1,USA
 regional oilcrop,domestic oilcrop,domestic oilcrop,OilCrop,1,0,1,regional

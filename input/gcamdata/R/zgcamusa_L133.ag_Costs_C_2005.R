@@ -285,7 +285,8 @@ module_gcamusa_L133.ag_Costs_C_2005 <- function(command, ...) {
     # Take the LDS harvested area information by region, GLU, and GTAP crop:
     L100.LDS_ag_HA_ha %>%
       # select the USA crops and Indonesia Palmfruit:
-      filter(iso == "usa" | iso == "idn" & GTAP_crop == "OilPalmFruit") %>%
+      ##ADDITION: ALSO ADD RUBBER COFFEE AND COCOA FOR INDONESIA
+      filter(iso == "usa" | iso == "idn" & GTAP_crop %in% c("OilPalmFruit","NatRubber","CoffeeGreen","CocoaBeans" )) %>%
       # rename value to HA_ha:
       rename(HA_ha = value) %>%
       # join the corresponding production information:
