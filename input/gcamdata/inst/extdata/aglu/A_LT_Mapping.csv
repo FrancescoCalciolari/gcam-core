@@ -12,6 +12,7 @@ AgroForestLand,AgroForest_NonPasture,AllForestLand,biomassTree,biomassTree,bioma
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,CornC4,Corn,CornC4
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,FiberCrop,FiberCrop,FiberCrop
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,FodderGrass,FodderGrass,FodderGrass
+AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,FodderGrass,FodderGrass_Deforest,FodderGrass_Deforest
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,FodderHerb,FodderHerb,FodderHerb
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,FodderHerb,FodderHerb,FodderHerbC4
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,Fruits,Fruits,Fruits
@@ -22,6 +23,9 @@ AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,MiscCropTree,MiscCrop
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,Coffee,Coffee,Coffee
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,Cocoa,Cocoa,Cocoa
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,Rubber,Rubber,Rubber
+AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,Coffee,Coffee_Deforest,Coffee_Deforest
+AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,Cocoa,Cocoa_Deforest,Cocoa_Deforest
+AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,Rubber,Rubber_Deforest,Rubber_Deforest
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,NutsSeeds,NutsSeeds,NutsSeeds
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,NutsSeedsTree,NutsSeeds,NutsSeedsTree
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,OilCrop,OilCrop,OilCrop
@@ -41,6 +45,7 @@ AgroForestLand,AgroForest_NonPasture,CropLand,OtherArableLand,OtherArableLand,,
 AgroForestLand,AgroForest_NonPasture,GrassShrubLand,Grassland,Grassland,,
 AgroForestLand,AgroForest_NonPasture,GrassShrubLand,Shrubland,Shrubland,,
 AgroForestLand,AllPastureLand,,Pasture,Pasture,Pasture,Pasture
+AgroForestLand,AllPastureLand,,Pasture,Pasture,Pasture_Deforest,Pasture_Deforest
 AgroForestLand,AllPastureLand,,UnmanagedPasture,UnmanagedPasture,,
 RockIceDesert,,,RockIceDesert,RockIceDesert,,
 Tundra,,,Tundra,Tundra,,

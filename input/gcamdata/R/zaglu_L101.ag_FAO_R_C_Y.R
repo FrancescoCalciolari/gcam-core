@@ -29,6 +29,8 @@ module_aglu_L101.ag_FAO_R_C_Y <- function(command, ...) {
     c(FILE = "common/iso_GCAM_regID",
       FILE = "aglu/FAO/FAO_ag_items_PRODSTAT",
       FILE = "aglu/LDS/LDS_land_types",
+      FILE = "aglu/A_DeforestGLUs",
+      FILE = "aglu/A_DeforestCommodities",
       "L100.FAO_PRODSTAT_TO_DOWNSCAL",
       "L100.LDS_ag_HA_ha",
       "L100.LDS_ag_prod_t",
@@ -59,6 +61,10 @@ module_aglu_L101.ag_FAO_R_C_Y <- function(command, ...) {
     get_data_list(all_data, MODULE_INPUTS, strip_attributes = TRUE)
 
 # DOWNSCALE UPDATE Aggregate to GCAM regions first ----
+    ## Make full deforestation GLU/Commodity combo
+    Deforest_GLU_Comm <- repeat_add_columns(A_DeforestGLUs, A_DeforestCommodities) %>%
+      mutate(GCAM_commodity_deforest = paste0(GCAM_commodity, "_Deforest"))
+
     ## Generate LDS_ctry_crop_SHARES ----
     # we downscale the data from countries to basins, using the basin-within-country shares
     # of each GCAM commodity in the Monfreda (pre-processed by LDS) data on harvested area and production
@@ -133,7 +139,6 @@ module_aglu_L101.ag_FAO_R_C_Y <- function(command, ...) {
     FAO_PRODSTAT_DOWNSCALED_new <- bind_rows(FAO_PRODSTAT_DOWNSCALED_matches,
                                          FAO_PRODSTAT_DOWNSCALED_cropNA)
 
-
     # Assert that FAO_PRODSTAT_DOWNSCALED_new match input data L100.FAO_PRODSTAT_TO_DOWNSCAL ----
     FAO_PRODSTAT_DOWNSCALED_new %>%
       group_by(GCAM_commodity, year) %>%
@@ -152,6 +157,11 @@ module_aglu_L101.ag_FAO_R_C_Y <- function(command, ...) {
       in_out_prod_area
     assertthat::assert_that(nrow(in_out_prod_area) == 0, msg = "Check inconsistency in Production downscale to GLU.")
 
+    FAO_PRODSTAT_DOWNSCALED_new <-  FAO_PRODSTAT_DOWNSCALED_new %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity),
+             GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_subsector)) %>%
+      select(-GCAM_commodity_deforest)
 
     # Process FAO production data: convert units, aggregate to region, commodity, and GLU
     ##* L101.ag_Prod_Mt_R_C_Y_GLU ----

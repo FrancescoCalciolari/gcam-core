@@ -192,7 +192,9 @@ module_aglu_L2012.ag_For_Past_bio_input_irr_mgmt <- function(command, ...) {
     # Then start from production table, join in the HA:CL, and expand the final base year to all future years
     L2012.AgProduction_ag_irr_mgmt %>%
       select(LEVEL2_DATA_NAMES[["AgTechYr"]]) %>%
-      separate(AgSupplySubsector, c("GCAM_subsector", "GLU_name"), sep = aglu.CROP_GLU_DELIMITER, remove = FALSE) %>%
+      separate(AgSupplySubsector, c("deforest_crop", "GCAM_subsector", "GLU_name"), sep = aglu.CROP_GLU_DELIMITER, remove = FALSE, fill = "left") %>%
+      mutate(GCAM_subsector = if_else(!is.na(deforest_crop), paste0(deforest_crop, aglu.CROP_GLU_DELIMITER, GCAM_subsector), GCAM_subsector)) %>%
+      select(-deforest_crop) %>%
       left_join_error_no_match(L2012.ag_HA_to_CropLand_R_Y_GLU,
                                by = c("region", "GLU_name", "year")) %>%
       select(LEVEL2_DATA_NAMES[["AgHAtoCL"]]) %>%

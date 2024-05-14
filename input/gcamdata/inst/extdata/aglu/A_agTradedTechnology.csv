@@ -3,7 +3,7 @@
 # Units: Various
 # Comments: for traded crops, each subsector has only one technology; there is no technology-level competition
 # Source: NA
-# Column types: ccccnnni 
+# Column types: ccccnnni
 # ----------
 supplysector,subsector,technology,minicam.energy.input,coefficient,input.cost,share.weight,traded
 traded corn,traded corn,traded corn,Corn,1,0,1,1
@@ -14,6 +14,9 @@ traded misccrop,traded misccrop,traded misccrop,MiscCrop,1,0,1,1
 traded coffee,traded coffee,traded coffee,Coffee,1,0,1,1
 traded cocoa,traded cocoa,traded cocoa,Cocoa,1,0,1,1
 traded rubber,traded rubber,traded rubber,Rubber,1,0,1,1
+traded coffee_Deforest,traded coffee_Deforest,traded coffee_Deforest,Coffee_Deforest,1,0,1,1
+traded cocoa_Deforest,traded cocoa_Deforest,traded cocoa_Deforest,Cocoa_Deforest,1,0,1,1
+traded rubber_Deforest,traded rubber_Deforest,traded rubber_Deforest,Rubber_Deforest,1,0,1,1
 traded nuts_seeds,traded nuts_seeds,traded nuts_seeds,NutsSeeds,1,0,1,1
 traded oilcrop,traded oilcrop,traded oilcrop,OilCrop,1,0,1,1
 traded othergrain,traded othergrain,traded othergrain,OtherGrain,1,0,1,1
@@ -25,6 +28,7 @@ traded sugarcrop,traded sugarcrop,traded sugarcrop,SugarCrop,1,0,1,1
 traded vegetables,traded vegetables,traded vegetables,Vegetables,1,0,1,1
 traded wheat,traded wheat,traded wheat,Wheat,1,0,1,1
 traded beef,traded beef,traded beef,Beef,1,0,1,1
+traded beef_Deforest,traded beef_Deforest,traded beef_Deforest,Beef_Deforest,1,0,1,1
 traded dairy,traded dairy,traded dairy,Dairy,1,0,1,1
 traded pork,traded pork,traded pork,Pork,1,0,1,1
 traded poultry,traded poultry,traded poultry,Poultry,1,0,1,1

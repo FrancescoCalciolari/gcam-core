@@ -21,6 +21,7 @@ module_aglu_L2052.ag_prodchange_cost_irr_mgmt <- function(command, ...) {
   MODULE_INPUTS <-
     c(FILE = "common/GCAM_region_names",
       FILE = "water/basin_to_country_mapping",
+      FILE = "aglu/A_DeforestCommodities",
       "L123.For_Yield_m3m2_R_GLU",
       "L161.ag_irrProd_Mt_R_C_Y_GLU",
       "L161.ag_rfdProd_Mt_R_C_Y_GLU",
@@ -66,6 +67,12 @@ module_aglu_L2052.ag_prodchange_cost_irr_mgmt <- function(command, ...) {
     names_AgTech <- LEVEL2_DATA_NAMES[["AgTech"]]
     names_AgCost <- LEVEL2_DATA_NAMES[["AgCost"]]
     names_AgProdChange <- LEVEL2_DATA_NAMES[["AgProdChange"]]
+
+    # Add deforest commodities to price data
+    L164.ag_Cost_75USDkg_C <- L164.ag_Cost_75USDkg_C %>%
+      semi_join(A_DeforestCommodities, by = c("GCAM_commodity")) %>%
+      mutate(GCAM_commodity = paste0(GCAM_commodity, "_Deforest")) %>%
+      bind_rows(L164.ag_Cost_75USDkg_C)
 
     # Production costs ----
     # Assign nonLandVariableCost of crop production, assuming the same level to all four technologies

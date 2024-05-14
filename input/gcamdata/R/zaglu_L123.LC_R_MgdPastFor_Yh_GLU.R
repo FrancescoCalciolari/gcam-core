@@ -19,14 +19,17 @@
 #' @importFrom tidyr replace_na
 #' @author RC August 2017
 module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
+  MODULE_INPUTS <- c(FILE = "aglu/A_DeforestGLUs",
+                     FILE = "aglu/A_DeforestCommodities",
+                     "L108.ag_Feed_Mt_R_C_Y",
+                     "L110.For_ALL_bm3_R_Y",
+                     "L120.LC_bm2_R_LT_Yh_GLU",
+                     "L121.CarbonContent_kgm2_R_LT_GLU",
+                     "L121.Yield_kgm2_R_Past_GLU",
+                     "L101.Pop_thous_R_Yh",
+                     "L120.LC_soil_veg_carbon_GLU")
   if(command == driver.DECLARE_INPUTS) {
-    return(c("L108.ag_Feed_Mt_R_C_Y",
-             "L110.For_ALL_bm3_R_Y",
-             "L120.LC_bm2_R_LT_Yh_GLU",
-             "L121.CarbonContent_kgm2_R_LT_GLU",
-             "L121.Yield_kgm2_R_Past_GLU",
-             "L101.Pop_thous_R_Yh",
-             "L120.LC_soil_veg_carbon_GLU"))
+    return(MODULE_INPUTS)
   } else if(command == driver.DECLARE_OUTPUTS) {
     return(c("L123.ag_Prod_Mt_R_Past_Y_GLU",
              "L123.ag_Yield_kgm2_R_Past_Y_GLU",
@@ -43,19 +46,16 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
       `mature age` <- GLU <- Yield_m3m2 <- Prod_bm3 <- MgdFor <- MgdFor_adj <- NULL   # silence package check notes
 
     # Load required inputs
-    L108.ag_Feed_Mt_R_C_Y <- get_data(all_data, "L108.ag_Feed_Mt_R_C_Y")
-    L110.For_ALL_bm3_R_Y <- get_data(all_data, "L110.For_ALL_bm3_R_Y")
-    L120.LC_bm2_R_LT_Yh_GLU <- get_data(all_data, "L120.LC_bm2_R_LT_Yh_GLU")
+    get_data_list(all_data, MODULE_INPUTS)
 
     if(aglu.CARBON_DATA_SOURCE=="moirai"){
-
-      L121.CarbonContent_kgm2_R_LT_GLU <- get_data(all_data, "L120.LC_soil_veg_carbon_GLU")
-    }else{
-      L121.CarbonContent_kgm2_R_LT_GLU <- get_data(all_data, "L121.CarbonContent_kgm2_R_LT_GLU")
-
+      L121.CarbonContent_kgm2_R_LT_GLU <- L120.LC_soil_veg_carbon_GLU
+    } else {
+      L121.CarbonContent_kgm2_R_LT_GLU <- L121.CarbonContent_kgm2_R_LT_GLU
     }
-    L121.Yield_kgm2_R_Past_GLU <- get_data(all_data, "L121.Yield_kgm2_R_Past_GLU")
-    L101.Pop_thous_R_Yh <- get_data(all_data, "L101.Pop_thous_R_Yh")
+    ## Make full deforestation GLU/Commodity combo
+    Deforest_GLU_Comm <- repeat_add_columns(A_DeforestGLUs, A_DeforestCommodities) %>%
+      mutate(GCAM_commodity_deforest = paste0(GCAM_commodity, "_Deforest"))
 
     # Part 1: Pasture production, yield and managed pasture land
 
@@ -285,6 +285,9 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
 
     # Produce outputs
     L123.ag_Prod_Mt_R_Past_Y_GLU %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity)) %>%
+      select(-GCAM_commodity_deforest) %>%
       add_title("Pasture production by GCAM region / year / GLU") %>%
       add_units("Mt") %>%
       add_comments("Calculate potential production by region and GLU as total pasture land area times yield") %>%
@@ -297,6 +300,9 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
       L123.ag_Prod_Mt_R_Past_Y_GLU
 
     L123.LC_bm2_R_MgdPast_Yh_GLU %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "Land_Type" = "GCAM_commodity")) %>%
+      mutate(Land_Type = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, Land_Type)) %>%
+      select(-GCAM_commodity_deforest) %>%
       add_title("Managed pasture land cover by GCAM region / historical year / GLU") %>%
       add_units("bm2") %>%
       add_comments("Calculate managed pasture land as managed pasture land production divided by yields") %>%
@@ -307,6 +313,9 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
       L123.LC_bm2_R_MgdPast_Yh_GLU
 
     L123.ag_Yield_kgm2_R_Past_Y_GLU %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity)) %>%
+      select(-GCAM_commodity_deforest) %>%
       add_title("Pasture yield by GCAM region / year / GLU") %>%
       add_units("kg/m2") %>%
       add_comments("Calculate yields as managed pasture land production divided by adjusted managed pasture land") %>%

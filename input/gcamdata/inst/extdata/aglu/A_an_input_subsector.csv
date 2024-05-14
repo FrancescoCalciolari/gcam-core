@@ -9,6 +9,8 @@ FodderHerb_Residue,FodderHerb,-6,start-year,1,share-weight,final-calibration-yea
 FodderHerb_Residue,Residue,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,
 Pasture_FodderGrass,Pasture,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,
 Pasture_FodderGrass,FodderGrass,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,
+Pasture_FodderGrass_Deforest,Pasture_Deforest,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,
+Pasture_FodderGrass_Deforest,FodderGrass_Deforest,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,
 FeedCrops,Corn,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,
 FeedCrops,FiberCrop,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,
 FeedCrops,Fruits,-6,start-year,1,share-weight,final-calibration-year,end-year,,fixed,

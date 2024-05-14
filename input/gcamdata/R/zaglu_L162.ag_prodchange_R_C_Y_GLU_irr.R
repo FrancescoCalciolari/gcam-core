@@ -22,16 +22,19 @@
 #' @importFrom tibble tibble
 #' @author ACS June 2017
 module_aglu_L162.ag_prodchange_R_C_Y_GLU_irr <- function(command, ...) {
+  MODULE_INPUTS <- c(FILE = "common/iso_GCAM_regID",
+                     FILE = "aglu/A_defaultYieldRate",
+                     FILE = "aglu/AGLU_ctry",
+                     FILE = "aglu/FAO/FAO_ag_CROSIT",
+                     FILE = "aglu/FAO/FAO_ag_items_PRODSTAT",
+                     FILE = "aglu/A_DeforestGLUs",
+                     FILE = "aglu/A_DeforestCommodities",
+                     "L151.ag_irrHA_ha_ctry_crop",
+                     "L151.ag_rfdHA_ha_ctry_crop",
+                     "L161.ag_irrProd_Mt_R_C_Y_GLU",
+                     "L161.ag_rfdProd_Mt_R_C_Y_GLU")
   if(command == driver.DECLARE_INPUTS) {
-    return(c(FILE = "common/iso_GCAM_regID",
-             FILE = "aglu/A_defaultYieldRate",
-             FILE = "aglu/AGLU_ctry",
-             FILE = "aglu/FAO/FAO_ag_CROSIT",
-             FILE = "aglu/FAO/FAO_ag_items_PRODSTAT",
-             "L151.ag_irrHA_ha_ctry_crop",
-             "L151.ag_rfdHA_ha_ctry_crop",
-             "L161.ag_irrProd_Mt_R_C_Y_GLU",
-             "L161.ag_rfdProd_Mt_R_C_Y_GLU"))
+    return(MODULE_INPUTS)
   } else if(command == driver.DECLARE_OUTPUTS) {
     return(c("L162.ag_YieldRatio_R_C_Ysy_GLU_irr",
              "L162.ag_YieldRate_R_C_Y_GLU_irr",
@@ -47,15 +50,12 @@ module_aglu_L162.ag_prodchange_R_C_Y_GLU_irr <- function(command, ...) {
       timestep <- lagyear <- YieldRatio_lag <- YieldRate <- defaultRate <- GCAM_subsector <- NULL  # silence package check notes
 
     # Load required inputs
-    iso_GCAM_regID <- get_data(all_data, "common/iso_GCAM_regID")
-    A_defaultYieldRate <- get_data(all_data, "aglu/A_defaultYieldRate")
-    AGLU_ctry <- get_data(all_data, "aglu/AGLU_ctry")
-    FAO_ag_CROSIT <- get_data(all_data, "aglu/FAO/FAO_ag_CROSIT")
-    FAO_ag_items_PRODSTAT <- get_data(all_data, "aglu/FAO/FAO_ag_items_PRODSTAT")
-    L151.ag_irrHA_ha_ctry_crop <- get_data(all_data, "L151.ag_irrHA_ha_ctry_crop")
-    L151.ag_rfdHA_ha_ctry_crop <- get_data(all_data, "L151.ag_rfdHA_ha_ctry_crop")
-    L161.ag_irrProd_Mt_R_C_Y_GLU <- get_data(all_data, "L161.ag_irrProd_Mt_R_C_Y_GLU")
-    L161.ag_rfdProd_Mt_R_C_Y_GLU <- get_data(all_data, "L161.ag_rfdProd_Mt_R_C_Y_GLU")
+    get_data_list(all_data, MODULE_INPUTS)
+
+
+    ## Make full deforestation GLU/Commodity combo
+    Deforest_GLU_Comm <- repeat_add_columns(A_DeforestGLUs, A_DeforestCommodities) %>%
+      mutate(GCAM_commodity_deforest = paste0(GCAM_commodity, "_Deforest"))
 
     # Perform calculations
 
@@ -117,9 +117,10 @@ module_aglu_L162.ag_prodchange_R_C_Y_GLU_irr <- function(command, ...) {
              yield_kgHa = ifelse(tag1 == 1 & year == 2030, yield_kgHa[year == 2005], yield_kgHa),
              tag2 = ifelse(yield_kgHa[year == 2050] < yield_kgHa[year == 2030], 1, 0), # if 2050 < 2030, then AgProdChange2 = AgProdChange1
              yield_kgHa = ifelse(tag2 == 1 & year == 2050, yield_kgHa[year == 2030] + 4*(yield_kgHa[year == 2030] - yield_kgHa[year == 2005])/5, yield_kgHa)) %>%
+      ungroup %>%
       # add the missing aglu.SPEC_AG_PROD_YEARS and interpolate the yields
       complete(year = c(year, aglu.SPEC_AG_PROD_YEARS) ,
-                      CROSIT_ctry, CROSIT_crop, Irr_Rfd) %>%
+                      nesting(CROSIT_ctry, CROSIT_crop, Irr_Rfd)) %>%
       select(CROSIT_ctry, CROSIT_crop, Irr_Rfd, year, yield_kgHa) %>%
       arrange(year) %>%
       group_by(CROSIT_ctry, CROSIT_crop, Irr_Rfd) %>%
@@ -234,7 +235,11 @@ module_aglu_L162.ag_prodchange_R_C_Y_GLU_irr <- function(command, ...) {
       # Calculate YieldRatio = Prod_mod/HA by region-commodity-glu-irrigation-year; subset and output the YieldRatios
       mutate(YieldRatio = Prod_mod / HA) %>%
       na.omit() %>%
-      select(GCAM_region_ID, GCAM_commodity, GCAM_subsector, year, GLU, Irr_Rfd, YieldRatio) ->
+      select(GCAM_region_ID, GCAM_commodity, GCAM_subsector, year, GLU, Irr_Rfd, YieldRatio) %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity),
+             GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_subsector)) %>%
+      select(-GCAM_commodity_deforest)->
       L162.ag_YieldRatio_R_C_Ysy_GLU_irr
 
     # Create a comparable table of YieldRatio for each year by GCAM region / commodity / GLU for biomass.

@@ -3,7 +3,7 @@
 # Units: Various
 # Comments: pass-through subsectors; there is no technology competition
 # Source: NA
-# Column types: ccccnnnc 
+# Column types: ccccnnnc
 # ----------
 supplysector,subsector,technology,minicam.energy.input,coefficient,input.cost,share.weight,market.name
 regional corn,domestic corn,domestic corn,Corn,1,0,1,regional
@@ -17,11 +17,17 @@ regional legumes,imported legumes,imported legumes,traded legumes,1,0,1,USA
 regional misccrop,domestic misccrop,domestic misccrop,MiscCrop,1,0,1,regional
 regional misccrop,imported misccrop,imported misccrop,traded misccrop,1,0,1,USA
 regional coffee,domestic coffee,domestic coffee,Coffee,1,0,1,regional
+regional coffee,domestic coffee,domestic coffee_Deforest,Coffee_Deforest,1,0,1,regional
 regional coffee,imported coffee,imported coffee,traded coffee,1,0,1,USA
+regional coffee,imported coffee,imported coffee_Deforest,traded coffee_Deforest,1,0,1,USA
 regional cocoa,domestic cocoa,domestic cocoa,Cocoa,1,0,1,regional
+regional cocoa,domestic cocoa,domestic cocoa_Deforest,Cocoa_Deforest,1,0,1,regional
 regional cocoa,imported cocoa,imported cocoa,traded cocoa,1,0,1,USA
+regional cocoa,imported cocoa,imported cocoa_Deforest,traded cocoa_Deforest,1,0,1,USA
 regional rubber,domestic rubber,domestic rubber,Rubber,1,0,1,regional
+regional rubber,domestic rubber,domestic rubber_Deforest,Rubber_Deforest,1,0,1,regional
 regional rubber,imported rubber,imported rubber,traded rubber,1,0,1,USA
+regional rubber,imported rubber,imported rubber_Deforest,traded rubber_Deforest,1,0,1,USA
 regional nuts_seeds,domestic nuts_seeds,domestic nuts_seeds,NutsSeeds,1,0,1,regional
 regional nuts_seeds,imported nuts_seeds,imported nuts_seeds,traded nuts_seeds,1,0,1,USA
 regional oilcrop,domestic oilcrop,domestic oilcrop,OilCrop,1,0,1,regional
@@ -43,7 +49,9 @@ regional vegetables,imported vegetables,imported vegetables,traded vegetables,1,
 regional wheat,domestic wheat,domestic wheat,Wheat,1,0,1,regional
 regional wheat,imported wheat,imported wheat,traded wheat,1,0,1,USA
 regional beef,domestic beef,domestic beef,Beef,1,0,1,regional
+regional beef,domestic beef,domestic beef_Deforest,Beef_Deforest,1,0,1,regional
 regional beef,imported beef,imported beef,traded beef,1,0,1,USA
+regional beef,imported beef,imported beef_Deforest,traded beef_Deforest,1,0,1,USA
 regional dairy,domestic dairy,domestic dairy,Dairy,1,0,1,regional
 regional dairy,imported dairy,imported dairy,traded dairy,1,0,1,USA
 regional pork,domestic pork,domestic pork,Pork,1,0,1,regional

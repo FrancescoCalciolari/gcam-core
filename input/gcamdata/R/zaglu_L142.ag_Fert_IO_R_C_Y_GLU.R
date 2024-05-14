@@ -113,6 +113,13 @@ module_aglu_L142.ag_Fert_IO_R_C_Y_GLU <- function(command, ...) {
 
     # Start with agricultural production by country / crop / GLU, calculate the production share of GLU to country,
     # Use the share to downscale country fertilizer demand to GLU.
+
+    L101.ag_Prod_Mt_R_C_Y_GLU_noDeforest <- L101.ag_Prod_Mt_R_C_Y_GLU %>%
+      mutate(GCAM_commodity_deforest = GCAM_commodity,
+             GCAM_subsector_deforest = GCAM_subsector,
+             GCAM_commodity = gsub("_Deforest", "", GCAM_commodity_deforest),
+             GCAM_subsector = gsub("_Deforest", "", GCAM_subsector_deforest))
+
     L100.LDS_ag_prod_t %>%
       # Match in country total production
       left_join_error_no_match(L142.ag_Prod_t_ctry_crop, by = c("iso", "GTAP_crop")) %>%
@@ -133,19 +140,21 @@ module_aglu_L142.ag_Fert_IO_R_C_Y_GLU <- function(command, ...) {
       summarise(Fert_Cons_MtN = sum(Fert_Cons_MtN)) %>%
       ungroup() %>%
       # Match in agricultural production by GCAM region / commodity / GLU in the base year; this creates NAs
-      left_join(filter(L101.ag_Prod_Mt_R_C_Y_GLU, year %in% aglu.BASE_YEAR_IFA),
+      left_join(filter(L101.ag_Prod_Mt_R_C_Y_GLU_noDeforest, year %in% aglu.BASE_YEAR_IFA),
                 by = c("GCAM_region_ID", "GCAM_commodity", "GCAM_subsector", "GLU")) %>%
       # Calculate unscaled input-output coefficients as unscaled fertilizer demands divided by agricultural production
       mutate(Fert_IO_unscaled = Fert_Cons_MtN / value,
              Fert_IO_unscaled = replace(Fert_IO_unscaled, Fert_IO_unscaled == Inf, 0)) %>%
       select(-year, -value, -Fert_Cons_MtN) %>%
       # Match these coefficients into historical agricultural production (right_join: same coefficients for all years)
-      right_join(L101.ag_Prod_Mt_R_C_Y_GLU, by = c("GCAM_region_ID", "GCAM_commodity", "GCAM_subsector", "GLU")) %>%
+      right_join(L101.ag_Prod_Mt_R_C_Y_GLU_noDeforest, by = c("GCAM_region_ID", "GCAM_commodity", "GCAM_subsector", "GLU", "GCAM_commodity_deforest", "GCAM_subsector_deforest")) %>%
       # Calculate unscaled fertilizer consumption by year as production multiplied by input-output coefficients
       # GPK note 09/2018 - moving the replace_na() command from a few lines up to here, in order to accommodate missing
       # values which can occur from country/crop observations in FAOSTAT but not Monfreda/LDS (e.g., Puerto Rico rice)
       replace_na(list(Fert_IO_unscaled = 0)) %>%
-      mutate(Fert_Cons_MtN_unscaled = value * Fert_IO_unscaled) ->
+      mutate(Fert_Cons_MtN_unscaled = value * Fert_IO_unscaled) %>%
+      select(-GCAM_commodity, -GCAM_subsector) %>%
+      rename(GCAM_commodity = GCAM_commodity_deforest, GCAM_subsector = GCAM_subsector_deforest) ->
       L142.ag_Fert_Cons_MtN_R_C_Y_GLU
 
     # Compute region/year scalers so that sum of fertilizer consumption for all commodities equals total consumption

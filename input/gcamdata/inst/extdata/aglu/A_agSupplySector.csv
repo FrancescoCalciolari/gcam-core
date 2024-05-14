@@ -3,12 +3,13 @@
 # Unit: NA
 # Description: agSupplySectors - name / market / unit
 # Source: NA
-# Column types: ccccccic 
+# Column types: ccccccic
 # ----------
 AgSupplySector,output.unit,input.unit,price.unit,calPrice,market,logit.exponent,logit.type
 Corn,Mt,thous km2,1975$/kg,,regional,-3,
 FiberCrop,Mt,thous km2,1975$/kg,,regional,-3,
 FodderGrass,Mt,thous km2,1975$/kg,,regional,-3,
+FodderGrass_Deforest,Mt,thous km2,1975$/kg,,regional,-3,
 FodderHerb,Mt,thous km2,1975$/kg,,global,-3,
 Fruits,Mt,thous km2,1975$/kg,,regional,-3,
 Legumes,Mt,thous km2,1975$/kg,,regional,-3,
@@ -16,6 +17,9 @@ MiscCrop,Mt,thous km2,1975$/kg,,regional,-3,
 Coffee,Mt,thous km2,1975$/kg,,regional,-3,
 Cocoa,Mt,thous km2,1975$/kg,,regional,-3,
 Rubber,Mt,thous km2,1975$/kg,,regional,-3,
+Coffee_Deforest,Mt,thous km2,1975$/kg,,regional,-3,
+Cocoa_Deforest,Mt,thous km2,1975$/kg,,regional,-3,
+Rubber_Deforest,Mt,thous km2,1975$/kg,,regional,-3,
 NutsSeeds,Mt,thous km2,1975$/kg,,regional,-3,
 OilCrop,Mt,thous km2,1975$/kg,,regional,-3,
 OtherGrain,Mt,thous km2,1975$/kg,,regional,-3,
@@ -29,3 +33,4 @@ Wheat,Mt,thous km2,1975$/kg,,regional,-3,
 Forest,billion m3,thous km2,1975$/m3,,regional,-3,
 biomass,EJ,thous km2,1975$/GJ,,regional,-3,
 Pasture,Mt,thous km2,1975$/kg,,regional,-3,
+Pasture_Deforest,Mt,thous km2,1975$/kg,,regional,-3,

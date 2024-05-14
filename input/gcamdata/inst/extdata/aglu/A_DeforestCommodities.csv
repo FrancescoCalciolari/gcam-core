@@ -1,0 +1,12 @@
+# File: A_DeforestCommodities.csv
+# Title: GCAM commodities that can be tagged as deforestation-related
+# Unit: NA
+# Column types: c
+# ----------
+GCAM_commodity
+Coffee
+Cocoa
+Rubber
+Pasture
+FodderGrass
+Beef

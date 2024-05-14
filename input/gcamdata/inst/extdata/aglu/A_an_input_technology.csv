@@ -2,13 +2,15 @@
 # Title: Technologies of inputs to animal production
 # Units: NA
 # Source: NA
-# Column types: cccccccci 
+# Column types: cccccccci
 # ----------
 supplysector,subsector,technology,apply.to,from.year,to.year,interpolation.function,minicam.energy.input,coefficient
 FodderHerb_Residue,FodderHerb,FodderHerb,share-weight,final-calibration-year,end-year,fixed,FodderHerb,1
 FodderHerb_Residue,Residue,Residue,share-weight,final-calibration-year,end-year,fixed,Residue,1
 Pasture_FodderGrass,Pasture,Pasture,share-weight,final-calibration-year,end-year,fixed,Pasture,1
 Pasture_FodderGrass,FodderGrass,FodderGrass,share-weight,final-calibration-year,end-year,fixed,FodderGrass,1
+Pasture_FodderGrass_Deforest,Pasture_Deforest,Pasture_Deforest,share-weight,final-calibration-year,end-year,fixed,Pasture_Deforest,1
+Pasture_FodderGrass_Deforest,FodderGrass_Deforest,FodderGrass_Deforest,share-weight,final-calibration-year,end-year,fixed,FodderGrass_Deforest,1
 FeedCrops,Corn,Corn,share-weight,final-calibration-year,end-year,fixed,regional corn,1
 FeedCrops,FiberCrop,FiberCrop,share-weight,final-calibration-year,end-year,fixed,regional fibercrop,1
 FeedCrops,Fruits,Fruits,share-weight,final-calibration-year,end-year,fixed,regional fruits,1

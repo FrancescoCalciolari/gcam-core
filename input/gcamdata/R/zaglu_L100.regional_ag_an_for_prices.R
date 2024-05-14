@@ -31,7 +31,8 @@ module_aglu_L100.regional_ag_an_for_prices <- function(command, ...) {
       FILE = "aglu/FAO/FAO_an_items_PRODSTAT",
       # price data
       FILE = "aglu/FAO/GCAMDATA_FAOSTAT_ProducerPrice_170Regs_185PrimaryItems_2010to2020",
-      FILE = "aglu/FAO/GCAMDATA_FAOSTAT_ForExportPrice_214Regs_Roundwood_1973to2020")
+      FILE = "aglu/FAO/GCAMDATA_FAOSTAT_ForExportPrice_214Regs_Roundwood_1973to2020",
+      FILE = "aglu/A_DeforestCommodities")
 
   MODULE_OUTPUTS <-
     c("L1321.ag_prP_R_C_75USDkg",
@@ -56,7 +57,6 @@ module_aglu_L100.regional_ag_an_for_prices <- function(command, ...) {
 
     # Load required inputs ----
     get_data_list(all_data, MODULE_INPUTS, strip_attributes = TRUE)
-
 
     # Note that all AgLU prices are derived here
     # Alfalfa price (Fodder) is unweighted average over aglu.MODEL_PRICE_YEARS
@@ -308,6 +308,9 @@ module_aglu_L100.regional_ag_an_for_prices <- function(command, ...) {
 
     # Produce outputs
     L1321.ag_prP_R_C_75USDkg %>%
+      semi_join(A_DeforestCommodities) %>%
+      mutate(GCAM_commodity = paste0(GCAM_commodity, "_Deforest")) %>%
+      bind_rows(L1321.ag_prP_R_C_75USDkg) %>%
       add_title("Regional agricultural commodity prices for all traded primary GCAM AGLU commodities") %>%
       add_units("1975$/kg") %>%
       add_comments("Region-specific calibration prices by GCAM commodity and region") %>%
@@ -322,6 +325,9 @@ module_aglu_L100.regional_ag_an_for_prices <- function(command, ...) {
       L1321.ag_prP_R_C_75USDkg
 
     L1321.an_prP_R_C_75USDkg %>%
+      semi_join(A_DeforestCommodities) %>%
+      mutate(GCAM_commodity = paste0(GCAM_commodity, "_Deforest")) %>%
+      bind_rows(L1321.an_prP_R_C_75USDkg) %>%
       add_title("Regional animal commodity prices") %>%
       add_units("1975$/kg") %>%
       add_comments("Region-specific prices by GCAM commodity and region") %>%
