@@ -39,6 +39,7 @@ module_aglu_L2042.resbio_input_irr_mgmt <- function(command, ...) {
              FILE = "aglu/A_demand_technology",
              FILE = "aglu/A_resbio_curves",
              FILE = "aglu/A_bio_frac_prod_R",
+             FILE = "aglu/A_DeforestCommodities",
              "L111.ag_resbio_R_C",
              "L101.ag_Prod_Mt_R_C_Y_GLU",
              "L123.For_Prod_bm3_R_Y_GLU"))
@@ -66,9 +67,18 @@ module_aglu_L2042.resbio_input_irr_mgmt <- function(command, ...) {
     A_demand_technology <- get_data(all_data, "aglu/A_demand_technology", strip_attributes = TRUE)
     A_resbio_curves <- get_data(all_data, "aglu/A_resbio_curves")
     A_bio_frac_prod_R <- get_data(all_data, "aglu/A_bio_frac_prod_R")
+    A_DeforestCommodities <- get_data(all_data, "aglu/A_DeforestCommodities")
     L111.ag_resbio_R_C <- get_data(all_data, "L111.ag_resbio_R_C")
     L101.ag_Prod_Mt_R_C_Y_GLU <- get_data(all_data, "L101.ag_Prod_Mt_R_C_Y_GLU", strip_attributes = TRUE)
     L123.For_Prod_bm3_R_Y_GLU <- get_data(all_data, "L123.For_Prod_bm3_R_Y_GLU", strip_attributes = TRUE)
+
+
+    # Repeat L111.ag_resbio_R_C for Deforest crops
+    L111.ag_resbio_R_C <- L111.ag_resbio_R_C %>%
+      filter(GCAM_commodity %in% A_DeforestCommodities$GCAM_commodity) %>%
+      mutate(GCAM_commodity = paste0(GCAM_commodity, "_Deforest")) %>%
+      bind_rows(L111.ag_resbio_R_C)
+
 
     # the following lines convert basin identification from the current GLU### level 1 names to the
     # level 2 names.
