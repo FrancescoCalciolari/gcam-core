@@ -33,7 +33,8 @@ module_aglu_L240.ag_trade <- function(command, ...) {
       "L109.ag_ALL_Mt_R_C_Y",
       "L109.an_ALL_Mt_R_C_Y",
       "L110.For_ALL_bm3_R_Y",
-      "L100.FAO_For_Exp_m3")
+      "L100.FAO_For_Exp_m3",
+      "L2012.AgProduction_ag_irr_mgmt")
 
   MODULE_OUTPUTS <-
     c("L240.Supplysector_tra",
@@ -66,7 +67,7 @@ module_aglu_L240.ag_trade <- function(command, ...) {
     # Load required inputs ----
     get_data_list(all_data, MODULE_INPUTS, strip_attributes = TRUE)
 
-    # 0: Bind crops, livestock, and forest for prod and net trade (netexp)
+    # 0a: Bind crops, livestock, and forest for prod and net trade (netexp) ----------------------------
     L109.ag_an_for_ALL_Mt_R_C_Y <- L109.ag_ALL_Mt_R_C_Y %>%
       select(GCAM_region_ID, GCAM_commodity, year, Prod_Mt, NetExp_Mt) %>%
       bind_rows(L109.an_ALL_Mt_R_C_Y %>%
@@ -77,15 +78,62 @@ module_aglu_L240.ag_trade <- function(command, ...) {
                          Prod_Mt = Prod_bm3, NetExp_Mt = NetExp_bm3)) #note that physical unit for forest data is bm3
 
     #  and for gross trade
-    L1091.GrossTrade_Mt_R_C_Y <- L109.ag_ALL_Mt_R_C_Y %>%
+    L1091.GrossTrade_Mt_R_C_Y_nodeforest <- L109.ag_ALL_Mt_R_C_Y %>%
+      # remove deforest crops because they don't have exp/imp
+      filter(!grepl("Deforest", GCAM_commodity)) %>%
       select(GCAM_region_ID, GCAM_commodity, year, GrossExp_Mt, GrossImp_Mt) %>%
       bind_rows(L109.an_ALL_Mt_R_C_Y %>%
                   select(GCAM_region_ID, GCAM_commodity, year, GrossExp_Mt, GrossImp_Mt)) %>%
       bind_rows(L110.For_ALL_bm3_R_Y %>%
                   select(GCAM_region_ID, GCAM_commodity, year, GrossExp_Mt, GrossImp_Mt))
 
+    # 0b: adjust for deforest crops ---------------
+    # Production by crop/region/year
+    L240.AgProduction <- L2012.AgProduction_ag_irr_mgmt %>%
+      group_by(region, AgSupplySector, year) %>%
+      summarise(prod = sum(calOutputValue)) %>%
+      ungroup %>%
+      left_join_error_no_match(GCAM_region_names, by = "region") %>%
+      mutate(GCAM_commodity = gsub("_Deforest", "", AgSupplySector))
 
-    # 1. TRADED SECTOR / SUBSECTOR / TECHNOLOGY")
+    # Share of production of crop from a given region that are deforest-related
+    deforest_shares_export <- L240.AgProduction %>%
+      group_by(GCAM_region_ID, GCAM_commodity, year) %>%
+      filter(any(grepl("Deforest", AgSupplySector))) %>%
+      mutate(export_share = prod / sum(prod)) %>%
+      ungroup %>%
+      select(GCAM_region_ID, AgSupplySector, GCAM_commodity, year, export_share)
+
+    # Share of all production that are deforest-related
+    deforest_shares_import <- L240.AgProduction %>%
+      group_by(GCAM_commodity, AgSupplySector, year) %>%
+      summarise(prod = sum(prod)) %>%
+      group_by(GCAM_commodity, year) %>%
+      filter(any(grepl("Deforest", AgSupplySector))) %>%
+      mutate(import_share = prod / sum(prod)) %>%
+      ungroup %>%
+      select(GCAM_commodity, AgSupplySector, year, import_share)
+
+    # ADjust exports
+    L1091.GrossTrade_Mt_R_C_Y_Export_Adj <- L1091.GrossTrade_Mt_R_C_Y_nodeforest %>%
+      left_join(deforest_shares_export, by = c("GCAM_region_ID", "GCAM_commodity", "year")) %>%
+      mutate(GrossExp_Mt = if_else(!is.na(export_share), export_share * GrossExp_Mt, GrossExp_Mt),
+             GCAM_commodity = if_else(!is.na(AgSupplySector), AgSupplySector, GCAM_commodity)) %>%
+      select(-AgSupplySector, -export_share, -GrossImp_Mt)
+
+    # Adjust imports
+    L1091.GrossTrade_Mt_R_C_Y_Import_Adj <- L1091.GrossTrade_Mt_R_C_Y_nodeforest %>%
+      left_join(deforest_shares_import, by = c("GCAM_commodity", "year")) %>%
+      mutate(GrossImp_Mt = if_else(!is.na(import_share), import_share * GrossImp_Mt, GrossImp_Mt),
+             GCAM_commodity = if_else(!is.na(AgSupplySector), AgSupplySector, GCAM_commodity)) %>%
+      select(-AgSupplySector, -import_share, -GrossExp_Mt)
+
+    L1091.GrossTrade_Mt_R_C_Y <- L1091.GrossTrade_Mt_R_C_Y_Export_Adj %>%
+      full_join(L1091.GrossTrade_Mt_R_C_Y_Import_Adj, by = c("GCAM_region_ID", "GCAM_commodity", "year")) %>%
+      tidyr::replace_na(list(GrossExp_Mt = 0))
+
+    #
+    # 1. TRADED SECTOR / SUBSECTOR / TECHNOLOGY") ----------------------------
     # L240.Supplysector_tra: generic supplysector info for traded ag commodities
     # By convention, traded commodity information is contained within the USA region (could be within any)
     A_agTradedSector$region <- gcam.USA_REGION
@@ -140,7 +188,7 @@ module_aglu_L240.ag_trade <- function(command, ...) {
              tech.share.weight = subs.share.weight) %>%
       select(LEVEL2_DATA_NAMES[["Production"]])
 
-    # PART 2: DOMESTIC SUPPLY SECTOR / SUBSECTOR / TECHNOLOGY")
+    # PART 2: DOMESTIC SUPPLY SECTOR / SUBSECTOR / TECHNOLOGY") ----------------------------
     # L240.Supplysector_reg: generic supplysector info for regional ag commodities
     L240.Supplysector_reg <- mutate(A_agRegionalSector, logit.year.fillout = min(MODEL_BASE_YEARS)) %>%
       write_to_all_regions(c(LEVEL2_DATA_NAMES[["Supplysector"]], "logit.type"),
@@ -185,7 +233,7 @@ module_aglu_L240.ag_trade <- function(command, ...) {
     # L240.Production_reg_dom: Output (flow) of domestic
     # Domestic "output" is equal to production (Prod_Mt in L109) minus gross exports (calculated in L1091)
 
-    #### DOMESTIC TECHNOLOGY OUTPUT = AG PRODUCTION - GROSS EXPORTS
+    #### DOMESTIC TECHNOLOGY OUTPUT = AG PRODUCTION - GROSS EXPORTS ----------------------------
     L240.GrossExports_Mt_R_C_Y <- left_join_error_no_match(L1091.GrossTrade_Mt_R_C_Y,
                                                            GCAM_region_names,
                                                            by = "GCAM_region_ID") %>%
@@ -207,7 +255,7 @@ module_aglu_L240.ag_trade <- function(command, ...) {
              tech.share.weight = subs.share.weight) %>%
       select(LEVEL2_DATA_NAMES[["Production"]])
 
-    # Produce outputs
+    # Produce outputs ----------------------------
     L240.Supplysector_tra %>%
       add_title("Supplysector info for traded ag commodities") %>%
       add_units("None") %>%
