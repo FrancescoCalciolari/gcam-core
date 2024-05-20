@@ -405,7 +405,7 @@ module_aglu_L2012.ag_For_Past_bio_input_irr_mgmt <- function(command, ...) {
       L2012.AgProduction_For
 
     L2012.AgProduction_For_Past %>%
-      filter(AgSupplySector == "Pasture") %>%
+      filter(grepl("Pasture", AgSupplySector)) %>%
       add_title("Input table for pasture production") %>%
       add_units("Mt") %>%
       add_comments("Calibrated ouputs or shareweights are not specify by technology") %>%

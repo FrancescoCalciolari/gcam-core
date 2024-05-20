@@ -16,14 +16,15 @@
 #' @importFrom tidyr replace_na unite
 #' @author KD July 2017
 module_emissions_L2112.ag_nonco2_IRR_MGMT <- function(command, ...) {
+  MODULE_INPUTS <- c("L2111.AGREmissions",
+                     "L2111.AGRBio",
+                     "L2111.AWB_BCOC_EmissCoeff",
+                     "L2111.nonghg_max_reduction",
+                     "L2111.nonghg_steepness",
+                     "L2111.AWBEmissions",
+                     "L2012.AgProduction_ag_irr_mgmt")
   if(command == driver.DECLARE_INPUTS) {
-    return(c("L2111.AGREmissions",
-             "L2111.AGRBio",
-             "L2111.AWB_BCOC_EmissCoeff",
-             "L2111.nonghg_max_reduction",
-             "L2111.nonghg_steepness",
-             "L2111.AWBEmissions",
-             "L2012.AgProduction_ag_irr_mgmt"))
+    return(MODULE_INPUTS)
   } else if(command == driver.DECLARE_OUTPUTS) {
     return(c("L2112.AGRBio", "L2112.AWB_BCOC_EmissCoeff", "L2112.nonghg_max_reduction",
              "L2112.nonghg_steepness", "L2112.AWBEmissions", "L2112.AGREmissions"))
@@ -36,13 +37,7 @@ module_emissions_L2112.ag_nonco2_IRR_MGMT <- function(command, ...) {
       share_tech <- input.emissions <- Non.CO2 <- NULL  # silence package check notes
 
     # Load required inputs
-    L2111.AWBEmissions <- get_data(all_data, "L2111.AWBEmissions")
-    L2111.AGREmissions <- get_data(all_data, "L2111.AGREmissions")
-    L2111.AGRBio <- get_data(all_data, "L2111.AGRBio")
-    L2111.AWB_BCOC_EmissCoeff <- get_data(all_data, "L2111.AWB_BCOC_EmissCoeff")
-    L2111.nonghg_max_reduction <- get_data(all_data, "L2111.nonghg_max_reduction")
-    L2111.nonghg_steepness <- get_data(all_data, "L2111.nonghg_steepness")
-    L2012.AgProduction_ag_irr_mgmt <- get_data(all_data, "L2012.AgProduction_ag_irr_mgmt", strip_attributes = TRUE)
+    get_data_list(all_data, MODULE_INPUTS, strip_attributes = T)
 
     # ===================================================
     # For all of the animal emission tables add high and low management level

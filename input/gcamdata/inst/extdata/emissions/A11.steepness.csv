@@ -3,7 +3,7 @@
 # Description: Shape parameter of s-curve function that reduces the emissions coefficient as a function of the per-capita GDP,
 # Units: Unitless,
 # Source: Internal GCAM assumptions,
-# Column types: cn 
+# Column types: cn
 # ----------
 AgSupplySector,steepness
 Corn,3.5
@@ -26,3 +26,8 @@ Soybean,3.5
 SugarCrop,3.5
 Vegetables,3.5
 Wheat,3.5
+Coffee_Deforest,3.5
+Cocoa_Deforest,3.5
+Rubber_Deforest,3.5
+OilPalm_Deforest,3.5
+Soybean_Deforest,3.5

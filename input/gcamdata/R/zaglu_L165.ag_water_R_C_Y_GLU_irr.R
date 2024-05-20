@@ -23,17 +23,20 @@
 #' @importFrom tidyr gather replace_na spread
 #' @author BBL April 2017
 module_aglu_L165.ag_water_R_C_Y_GLU_irr <- function(command, ...) {
+  MODULE_INPUTS <- c(FILE = "common/iso_GCAM_regID",
+                     FILE = "aglu/FAO/FAO_ag_items_PRODSTAT",
+                     "L100.Water_footprint_m3",
+                     "L100.LDS_ag_prod_t",
+                     FILE = "aglu/Mekonnen_Hoekstra_Rep47_A2",
+                     FILE = "aglu/Rohwer_2007_IrrigationEff",
+                     "L151.ag_irrProd_t_ctry_crop",
+                     "L151.ag_rfdProd_t_ctry_crop",
+                     "L151.ag_irrHA_ha_ctry_crop",
+                     "L161.ag_irrProd_Mt_R_C_Y_GLU",
+                     FILE = "aglu/A_DeforestGLUs",
+                     FILE = "aglu/A_DeforestCommodities")
   if(command == driver.DECLARE_INPUTS) {
-    return(c(FILE = "common/iso_GCAM_regID",
-             FILE = "aglu/FAO/FAO_ag_items_PRODSTAT",
-             "L100.Water_footprint_m3",
-             "L100.LDS_ag_prod_t",
-             FILE = "aglu/Mekonnen_Hoekstra_Rep47_A2",
-             FILE = "aglu/Rohwer_2007_IrrigationEff",
-             "L151.ag_irrProd_t_ctry_crop",
-             "L151.ag_rfdProd_t_ctry_crop",
-             "L151.ag_irrHA_ha_ctry_crop",
-             "L161.ag_irrProd_Mt_R_C_Y_GLU"))
+    return(MODULE_INPUTS)
   } else if(command == driver.DECLARE_OUTPUTS) {
     return(c("L165.BlueIrr_m3kg_R_C_GLU",
              "L165.TotIrr_m3kg_R_C_GLU",
@@ -57,18 +60,12 @@ module_aglu_L165.ag_water_R_C_Y_GLU_irr <- function(command, ...) {
     all_data <- list(...)[[1]]
 
     # Load required inputs
-    iso_GCAM_regID <- get_data(all_data, "common/iso_GCAM_regID")
-    FAO_ag_items_PRODSTAT <- get_data(all_data, "aglu/FAO/FAO_ag_items_PRODSTAT")
-    L100.Water_footprint_m3 <- get_data(all_data, "L100.Water_footprint_m3")
-    Mekonnen_Hoekstra_Rep47_A2 <- get_data(all_data, "aglu/Mekonnen_Hoekstra_Rep47_A2")
-    Rohwer_2007_IrrigationEff <- get_data(all_data, "aglu/Rohwer_2007_IrrigationEff")
-    L100.LDS_ag_prod_t <- get_data(all_data, "L100.LDS_ag_prod_t")
-    L151.ag_irrProd_t_ctry_crop <- get_data(all_data, "L151.ag_irrProd_t_ctry_crop")
-    L151.ag_rfdProd_t_ctry_crop <- get_data(all_data, "L151.ag_rfdProd_t_ctry_crop")
-    L151.ag_irrHA_ha_ctry_crop <- get_data(all_data, "L151.ag_irrHA_ha_ctry_crop")
-    L161.ag_irrProd_Mt_R_C_Y_GLU <- get_data(all_data, "L161.ag_irrProd_Mt_R_C_Y_GLU")
+    get_data_list(all_data, MODULE_INPUTS)
 
-
+    ## Make full deforestation GLU/Commodity combo
+    Deforest_GLU_Comm <- repeat_add_columns(A_DeforestGLUs, A_DeforestCommodities) %>%
+      mutate(GCAM_commodity_deforest = paste0(GCAM_commodity, "_Deforest"),
+             GCAM_subsector_deforest = if_else(GCAM_commodity == "OilPalm", "OilPalmTree_Deforest", GCAM_commodity_deforest))
     # Perform computations
 
     # The method here is simple in principle: we are taking inventory
@@ -327,7 +324,11 @@ module_aglu_L165.ag_water_R_C_Y_GLU_irr <- function(command, ...) {
              GreenRfd_thousm3 = GreenRfd_m3kg * rfdProd_t) %>%
       # match in GCAM regions and commodities for aggregation
       left_join_error_no_match(select(iso_GCAM_regID, iso, GCAM_region_ID), by = "iso") %>%
-      left_join_keep_first_only(select(FAO_ag_items_PRODSTAT, GTAP_crop, GCAM_commodity, GCAM_subsector), by = "GTAP_crop") ->
+      left_join_keep_first_only(select(FAO_ag_items_PRODSTAT, GTAP_crop, GCAM_commodity, GCAM_subsector), by = "GTAP_crop") %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity),
+             GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_subsector_deforest, GCAM_subsector)) %>%
+      select(-GCAM_commodity_deforest, -GCAM_subsector_deforest)->
       L165.ag_Water_ctry_crop_GLU
 
     # Original lines 243-265

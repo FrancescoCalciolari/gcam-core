@@ -1027,6 +1027,11 @@ module_emissions_L112.ceds_ghg_en_R_S_T_Y <- function(command, ...) {
     # Agricultural waste burning emissions by region are assigned to crops and land use regions on the basis of excess dry biomass...
     # estimated from production, harvest index, and water content
 
+    # Repeat resbio stats for deforest crops
+    L111.ag_resbio_R_C <- L111.ag_resbio_R_C %>%
+      mutate(GCAM_commodity = paste0(GCAM_commodity, "_Deforest")) %>%
+      bind_rows(L111.ag_resbio_R_C)
+
     # Match weighted average residue biomass parameters with crop prodcution.
     L101.ag_Prod_Mt_R_C_Y_GLU %>%
       left_join(L111.ag_resbio_R_C, by = c("GCAM_region_ID", "GCAM_commodity")) %>%

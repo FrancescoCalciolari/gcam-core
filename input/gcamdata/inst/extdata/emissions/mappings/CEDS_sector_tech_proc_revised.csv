@@ -217,3 +217,8 @@ urban processes,waste_incineration,waste_incineration,urban processes,waste_inci
 urban processes,wastewater,wastewater,urban processes,wastewater,wastewater,wastewater,process,wastewater,all,all,wastewater,,,,Wastewater,
 Vegetables,,,Vegetables,,,,,,,,,,,,Cropland Management,
 Wheat,,,Wheat,,,,,,,,,,,,Cropland Management,
+Coffee_Deforest,,,Coffee_Deforest,,,,,,,,,,,,Cropland Management,
+Cocoa_Deforest,,,Cocoa_Deforest,,,,,,,,,,,,Cropland Management,
+OilPalm_Deforest,,,OilPalm_Deforest,,,,,,,,,,,,Cropland Management,
+Rubber_Deforest,,,Rubber_Deforest,,,,,,,,,,,,Cropland Management,
+Soybean_Deforest,,,Soybean_Deforest,,,,,,,,,,,,Cropland Management,

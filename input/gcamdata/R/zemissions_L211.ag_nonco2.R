@@ -21,18 +21,21 @@
 #' @importFrom dplyr bind_rows distinct filter mutate select
 #' @author RH July 2017
 module_emissions_L211.ag_nonco2 <- function(command, ...) {
+  MODULE_INPUTS <- c(FILE = "common/GCAM_region_names",
+                     FILE = "water/basin_to_country_mapping",
+                     FILE = "emissions/A_regions",
+                     "L2052.AgCost_bio_irr_mgmt",
+                     "L113.ghg_tg_R_an_C_Sys_Fd_Yh",
+                     "L115.nh3_tg_R_an_C_Sys_Fd_Yh",
+                     "L121.nonco2_tg_R_awb_C_Y_GLU",
+                     "L122.ghg_tg_R_agr_C_Y_GLU",
+                     "L123.bcoc_tgmt_R_awb_2000",
+                     FILE = "emissions/A11.max_reduction",
+                     FILE = "emissions/A11.steepness",
+                     FILE = "aglu/A_DeforestGLUs",
+                     FILE = "aglu/A_DeforestCommodities")
   if(command == driver.DECLARE_INPUTS) {
-    return(c(FILE = "common/GCAM_region_names",
-             FILE = "water/basin_to_country_mapping",
-             FILE = "emissions/A_regions",
-             "L2052.AgCost_bio_irr_mgmt",
-             "L113.ghg_tg_R_an_C_Sys_Fd_Yh",
-             "L115.nh3_tg_R_an_C_Sys_Fd_Yh",
-             "L121.nonco2_tg_R_awb_C_Y_GLU",
-             "L122.ghg_tg_R_agr_C_Y_GLU",
-             "L123.bcoc_tgmt_R_awb_2000",
-             FILE = "emissions/A11.max_reduction",
-             FILE = "emissions/A11.steepness"))
+    return(MODULE_INPUTS)
   } else if(command == driver.DECLARE_OUTPUTS) {
     return(c("L211.AWBEmissions",
              "L211.AGREmissions",
@@ -53,20 +56,28 @@ module_emissions_L211.ag_nonco2 <- function(command, ...) {
     all_data <- list(...)[[1]]
 
     # Load required inputs
-    GCAM_region_names <- get_data(all_data, "common/GCAM_region_names")
-    basin_to_country_mapping <- get_data(all_data, "water/basin_to_country_mapping", strip_attributes = TRUE)
-    A_regions <- get_data(all_data, "emissions/A_regions")
-    L2052.AgCost_bio_irr_mgmt <- get_data(all_data, "L2052.AgCost_bio_irr_mgmt", strip_attributes = TRUE)
-    L113.ghg_tg_R_an_C_Sys_Fd_Yh <- get_data(all_data, "L113.ghg_tg_R_an_C_Sys_Fd_Yh", strip_attributes = TRUE)
-    L115.nh3_tg_R_an_C_Sys_Fd_Yh <- get_data(all_data, "L115.nh3_tg_R_an_C_Sys_Fd_Yh", strip_attributes = TRUE)
-    L121.nonco2_tg_R_awb_C_Y_GLU <- get_data(all_data, "L121.nonco2_tg_R_awb_C_Y_GLU", strip_attributes = TRUE) %>%
-      replace_GLU(basin_to_country_mapping)
-    L122.ghg_tg_R_agr_C_Y_GLU <- get_data(all_data, "L122.ghg_tg_R_agr_C_Y_GLU", strip_attributes = TRUE) %>%
-      replace_GLU(basin_to_country_mapping)
-    L123.bcoc_tgmt_R_awb_2000 <- get_data(all_data, "L123.bcoc_tgmt_R_awb_2000", strip_attributes = TRUE) %>%
-      replace_GLU(basin_to_country_mapping)
-    A11.max_reduction <- get_data(all_data, "emissions/A11.max_reduction", strip_attributes = TRUE)
-    A11.steepness <- get_data(all_data, "emissions/A11.steepness", strip_attributes = TRUE)
+    get_data_list(all_data, MODULE_INPUTS)
+
+    ## Make full deforestation GLU/Commodity combo
+    Deforest_GLU_Comm <- repeat_add_columns(A_DeforestGLUs, A_DeforestCommodities) %>%
+      mutate(GCAM_commodity_deforest = paste0(GCAM_commodity, "_Deforest"),
+             GCAM_subsector_deforest = if_else(GCAM_commodity == "OilPalm", "OilPalmTree_Deforest", GCAM_commodity_deforest))
+    ## Put in deforestation crops to emissions inputs
+    L121.nonco2_tg_R_awb_C_Y_GLU <- L121.nonco2_tg_R_awb_C_Y_GLU %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity),
+             GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_subsector_deforest, GCAM_subsector)) %>%
+      select(-GCAM_commodity_deforest, -GCAM_subsector_deforest)
+    L122.ghg_tg_R_agr_C_Y_GLU <- L122.ghg_tg_R_agr_C_Y_GLU %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity),
+             GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_subsector_deforest, GCAM_subsector)) %>%
+      select(-GCAM_commodity_deforest, -GCAM_subsector_deforest)
+    L123.bcoc_tgmt_R_awb_2000 <- L123.bcoc_tgmt_R_awb_2000 %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity),
+             GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_subsector_deforest, GCAM_subsector)) %>%
+      select(-GCAM_commodity_deforest, -GCAM_subsector_deforest)
 
     # ===================================================
     # L211.AWBEmissions: Agricultural Waste Burning emissions in all regions
@@ -158,65 +169,65 @@ module_emissions_L211.ag_nonco2 <- function(command, ...) {
 
     # Produce outputs
     L211.AWBEmissions %>%
-      add_title("Agricultural waste burning emissions by GCAM region, agricultural technology, and historical year") %>%
+      add_title("Agricultural waste burning emissions by GCAM region, agricultural technology, and historical year", overwrite = T) %>%
       add_units("Tg") %>%
       add_comments("Region and ag technology added to ag waste burning emissions") %>%
-      add_legacy_name("L211.AWBEmissions") %>%
+      add_legacy_name("L211.AWBEmissions", overwrite = T) %>%
       add_precursors("common/GCAM_region_names", "water/basin_to_country_mapping",
                      "emissions/A_regions", "L121.nonco2_tg_R_awb_C_Y_GLU") ->
       L211.AWBEmissions
     L211.AGREmissions %>%
-      add_title("Agriculture emissions by GCAM region, agricultural technology, and historical year") %>%
+      add_title("Agriculture emissions by GCAM region, agricultural technology, and historical year", overwrite = T) %>%
       add_units("Tg") %>%
       add_comments("Region and ag technology added to ag emissions") %>%
-      add_legacy_name("L211.AGREmissions") %>%
+      add_legacy_name("L211.AGREmissions", overwrite = T) %>%
       add_precursors("common/GCAM_region_names", "water/basin_to_country_mapping",
                      "L122.ghg_tg_R_agr_C_Y_GLU") ->
       L211.AGREmissions
     L211.AnEmissions %>%
-      add_title("Animal GHG emissions by region, supplysector, subsector, stub.technology and historical year") %>%
+      add_title("Animal GHG emissions by region, supplysector, subsector, stub.technology and historical year", overwrite = T) %>%
       add_units("Tg") %>%
       add_comments("Filtered L113.ghg_tg_R_an_C_Sys_Fd_Yh by year, added region, and rounded value") %>%
-      add_legacy_name("L211.AnEmissions") %>%
+      add_legacy_name("L211.AnEmissions", overwrite = T) %>%
       add_precursors("common/GCAM_region_names", "L113.ghg_tg_R_an_C_Sys_Fd_Yh") ->
       L211.AnEmissions
     L211.AnNH3Emissions %>%
-      add_title("Animal NH3 emissions by region, supplysector, subsector, stub.technology and historical year") %>%
+      add_title("Animal NH3 emissions by region, supplysector, subsector, stub.technology and historical year", overwrite = T) %>%
       add_units("Tg") %>%
       add_comments("Filtered L115.nh3_tg_R_an_C_Sys_Fd_Yh by year, added region, and rounded value") %>%
-      add_legacy_name("L211.AnNH3Emissions") %>%
+      add_legacy_name("L211.AnNH3Emissions", overwrite = T) %>%
       add_precursors("common/GCAM_region_names", "L115.nh3_tg_R_an_C_Sys_Fd_Yh") ->
       L211.AnNH3Emissions
     L211.AGRBio %>%
-      add_title("Bio N2O Emissions Coefficients by region and technology") %>%
+      add_title("Bio N2O Emissions Coefficients by region and technology", overwrite = T) %>%
       add_units("kg N2O per GJ bioenergy") %>%
       add_comments("Assumption emissions coefficients applied by region") %>%
-      add_legacy_name("L211.AGRBio") %>%
+      add_legacy_name("L211.AGRBio", overwrite = T) %>%
       add_precursors("emissions/A_regions",
                      "L2052.AgCost_bio_irr_mgmt") ->
       L211.AGRBio
     L211.AWB_BCOC_EmissCoeff %>%
-      add_title("Emission factors for BC and OC emissions by region and agricultural technology") %>%
+      add_title("Emission factors for BC and OC emissions by region and agricultural technology", overwrite = T) %>%
       add_units("kt/Mt") %>%
       add_comments("Added ag technology and region to L123.bcoc_tgmt_R_awb_2000") %>%
-      add_legacy_name("L211.AWB_BCOC_EmissCoeff") %>%
+      add_legacy_name("L211.AWB_BCOC_EmissCoeff", overwrite = T) %>%
       add_precursors("common/GCAM_region_names", "water/basin_to_country_mapping",
                      "L123.bcoc_tgmt_R_awb_2000") ->
       L211.AWB_BCOC_EmissCoeff
     L211.nonghg_max_reduction %>%
-      add_title("Non-GHG maximum emissions coefficient reduction") %>%
+      add_title("Non-GHG maximum emissions coefficient reduction", overwrite = T) %>%
       add_units("Percent reduction from base-year emissions coefficient") %>%
       add_comments("Emissions reductions added by AgSupplySector") %>%
-      add_legacy_name("L211.nonghg_max_reduction") %>%
+      add_legacy_name("L211.nonghg_max_reduction", overwrite = T) %>%
       add_precursors("common/GCAM_region_names", "water/basin_to_country_mapping",
                      "L123.bcoc_tgmt_R_awb_2000", "emissions/A11.max_reduction",
                      "emissions/A_regions", "L121.nonco2_tg_R_awb_C_Y_GLU") ->
       L211.nonghg_max_reduction
     L211.nonghg_steepness %>%
-      add_title("Steepness of non-GHG emissions reduction") %>%
+      add_title("Steepness of non-GHG emissions reduction", overwrite = T) %>%
       add_units("Unitless") %>%
       add_comments("Steepness added by AgSupplySector") %>%
-      add_legacy_name("L211.nonghg_steepness") %>%
+      add_legacy_name("L211.nonghg_steepness", overwrite = T) %>%
       add_precursors("common/GCAM_region_names", "water/basin_to_country_mapping",
                      "L123.bcoc_tgmt_R_awb_2000", "emissions/A11.max_reduction",
                      "emissions/A_regions", "L121.nonco2_tg_R_awb_C_Y_GLU",
