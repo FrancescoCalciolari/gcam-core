@@ -36,12 +36,16 @@ regional othergrain,domestic othergrain,domestic othergrain,OtherGrain,1,0,1,reg
 regional othergrain,imported othergrain,imported othergrain,traded othergrain,1,0,1,USA
 regional oilpalm,domestic oilpalm,domestic oilpalm,OilPalm,1,0,1,regional
 regional oilpalm,imported oilpalm,imported oilpalm,traded oilpalm,1,0,1,USA
+regional oilpalm,domestic oilpalm,domestic oilpalm_Deforest,OilPalm_Deforest,1,0,1,regional
+regional oilpalm,imported oilpalm,imported oilpalm_Deforest,traded oilpalm_Deforest,1,0,1,USA
 regional rice,domestic rice,domestic rice,Rice,1,0,1,regional
 regional rice,imported rice,imported rice,traded rice,1,0,1,USA
 regional root_tuber,domestic root_tuber,domestic root_tuber,RootTuber,1,0,1,regional
 regional root_tuber,imported root_tuber,imported root_tuber,traded root_tuber,1,0,1,USA
 regional soybean,domestic soybean,domestic soybean,Soybean,1,0,1,regional
 regional soybean,imported soybean,imported soybean,traded soybean,1,0,1,USA
+regional soybean,domestic soybean,domestic soybean_Deforest,Soybean_Deforest,1,0,1,regional
+regional soybean,imported soybean,imported soybean_Deforest,traded soybean_Deforest,1,0,1,USA
 regional sugarcrop,domestic sugarcrop,domestic sugarcrop,SugarCrop,1,0,1,regional
 regional sugarcrop,imported sugarcrop,imported sugarcrop,traded sugarcrop,1,0,1,USA
 regional vegetables,domestic vegetables,domestic vegetables,Vegetables,1,0,1,regional

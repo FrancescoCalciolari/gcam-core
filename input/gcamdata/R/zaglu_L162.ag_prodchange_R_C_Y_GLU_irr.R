@@ -55,7 +55,8 @@ module_aglu_L162.ag_prodchange_R_C_Y_GLU_irr <- function(command, ...) {
 
     ## Make full deforestation GLU/Commodity combo
     Deforest_GLU_Comm <- repeat_add_columns(A_DeforestGLUs, A_DeforestCommodities) %>%
-      mutate(GCAM_commodity_deforest = paste0(GCAM_commodity, "_Deforest"))
+      mutate(GCAM_commodity_deforest = paste0(GCAM_commodity, "_Deforest"),
+             GCAM_subsector_deforest = if_else(GCAM_commodity == "OilPalm", "OilPalmTree_Deforest", GCAM_commodity_deforest))
 
     # Perform calculations
 
@@ -238,8 +239,8 @@ module_aglu_L162.ag_prodchange_R_C_Y_GLU_irr <- function(command, ...) {
       select(GCAM_region_ID, GCAM_commodity, GCAM_subsector, year, GLU, Irr_Rfd, YieldRatio) %>%
       left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
       mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity),
-             GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_subsector)) %>%
-      select(-GCAM_commodity_deforest)->
+             GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_subsector_deforest, GCAM_subsector)) %>%
+      select(-GCAM_commodity_deforest, -GCAM_subsector_deforest)->
       L162.ag_YieldRatio_R_C_Ysy_GLU_irr
 
     # Create a comparable table of YieldRatio for each year by GCAM region / commodity / GLU for biomass.

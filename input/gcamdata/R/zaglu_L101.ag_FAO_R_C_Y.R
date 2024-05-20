@@ -63,7 +63,8 @@ module_aglu_L101.ag_FAO_R_C_Y <- function(command, ...) {
 # DOWNSCALE UPDATE Aggregate to GCAM regions first ----
     ## Make full deforestation GLU/Commodity combo
     Deforest_GLU_Comm <- repeat_add_columns(A_DeforestGLUs, A_DeforestCommodities) %>%
-      mutate(GCAM_commodity_deforest = paste0(GCAM_commodity, "_Deforest"))
+      mutate(GCAM_commodity_deforest = paste0(GCAM_commodity, "_Deforest"),
+             GCAM_subsector_deforest = if_else(GCAM_commodity == "OilPalm", "OilPalmTree_Deforest", GCAM_commodity_deforest))
 
     ## Generate LDS_ctry_crop_SHARES ----
     # we downscale the data from countries to basins, using the basin-within-country shares
@@ -160,8 +161,8 @@ module_aglu_L101.ag_FAO_R_C_Y <- function(command, ...) {
     FAO_PRODSTAT_DOWNSCALED_new <-  FAO_PRODSTAT_DOWNSCALED_new %>%
       left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
       mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity),
-             GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_subsector)) %>%
-      select(-GCAM_commodity_deforest)
+             GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_subsector_deforest, GCAM_subsector)) %>%
+      select(-GCAM_commodity_deforest, -GCAM_subsector_deforest)
 
     # Process FAO production data: convert units, aggregate to region, commodity, and GLU
     ##* L101.ag_Prod_Mt_R_C_Y_GLU ----
