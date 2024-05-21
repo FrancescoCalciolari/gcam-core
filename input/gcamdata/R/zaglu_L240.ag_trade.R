@@ -49,7 +49,8 @@ module_aglu_L240.ag_trade <- function(command, ...) {
       "L240.TechShrwt_reg",
       "L240.TechCoef_reg",
       "L240.Production_reg_imp",
-      "L240.Production_reg_dom")
+      "L240.Production_reg_dom",
+      "L240.Production_reg_tech_shrwtInterp")
 
   if(command == driver.DECLARE_INPUTS) {
     return(MODULE_INPUTS)
@@ -286,6 +287,14 @@ module_aglu_L240.ag_trade <- function(command, ...) {
       mutate(subs.share.weight = if_else(any(calOutputValue > 0), 1, 0)) %>%
       ungroup %>%
       select(LEVEL2_DATA_NAMES[["Production"]])
+
+
+    L240.Production_reg_tech_shrwtInterp <- bind_rows(L240.Production_reg_dom, L240.Production_reg_imp) %>%
+      distinct(region, supplysector, subsector, technology) %>%
+      mutate(apply.to = "share-weight",
+             from.year = MODEL_FINAL_BASE_YEAR,
+             to.year = max(MODEL_FUTURE_YEARS),
+             interpolation.function = "fixed")
 
     # Produce outputs ----------------------------
     L240.Supplysector_tra %>%
