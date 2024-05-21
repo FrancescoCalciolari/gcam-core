@@ -12,14 +12,6 @@ Beef,Pastoral,FodderHerb_Residue,share-weight,final-calibration-year,end-year,fi
 Beef,Pastoral,Pasture_FodderGrass,share-weight,final-calibration-year,end-year,fixed,Pasture_FodderGrass
 Beef,Pastoral,FeedCrops,share-weight,final-calibration-year,end-year,fixed,FeedCrops
 Beef,Pastoral,Scavenging_Other,share-weight,final-calibration-year,end-year,fixed,Scavenging_Other
-Beef_Deforest,Mixed,FodderHerb_Residue,share-weight,final-calibration-year,end-year,fixed,FodderHerb_Residue
-Beef_Deforest,Mixed,Pasture_FodderGrass_Deforest,share-weight,final-calibration-year,end-year,fixed,Pasture_Deforest
-Beef_Deforest,Mixed,FeedCrops,share-weight,final-calibration-year,end-year,fixed,FeedCrops
-Beef_Deforest,Mixed,Scavenging_Other,share-weight,final-calibration-year,end-year,fixed,Scavenging_Other
-Beef_Deforest,Pastoral,FodderHerb_Residue,share-weight,final-calibration-year,end-year,fixed,FodderHerb_Residue
-Beef_Deforest,Pastoral,Pasture_FodderGrass_Deforest,share-weight,final-calibration-year,end-year,fixed,Pasture_Deforest
-Beef_Deforest,Pastoral,FeedCrops,share-weight,final-calibration-year,end-year,fixed,FeedCrops
-Beef_Deforest,Pastoral,Scavenging_Other,share-weight,final-calibration-year,end-year,fixed,Scavenging_Other
 Dairy,Mixed,FodderHerb_Residue,share-weight,final-calibration-year,end-year,fixed,FodderHerb_Residue
 Dairy,Mixed,Pasture_FodderGrass,share-weight,final-calibration-year,end-year,fixed,Pasture_FodderGrass
 Dairy,Mixed,FeedCrops,share-weight,final-calibration-year,end-year,fixed,FeedCrops

@@ -9,7 +9,6 @@ AgSupplySector,AgSupplySubsector,logit.exponent,year.fillout,share.weight
 Corn,CornC4,-6,start-year,1
 FiberCrop,FiberCrop,-6,start-year,1
 FodderGrass,FodderGrass,-6,start-year,1
-FodderGrass_Deforest,FodderGrass_Deforest,-6,start-year,1
 FodderHerb,FodderHerb,-6,start-year,1
 FodderHerb,FodderHerbC4,-6,start-year,1
 Fruits,Fruits,-6,start-year,1
@@ -43,4 +42,3 @@ Forest,Forest,-6,start-year,1
 biomass,biomassGrass,-6,start-year,1
 biomass,biomassTree,-6,start-year,1
 Pasture,Pasture,-6,start-year,1
-Pasture_Deforest,Pasture_Deforest,-6,start-year,1
