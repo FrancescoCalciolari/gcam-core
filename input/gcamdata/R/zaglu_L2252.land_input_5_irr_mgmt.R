@@ -84,6 +84,13 @@ module_aglu_L2252.land_input_5_irr_mgmt <- function(command, ...) {
     L2012.AgYield_bio_ref <- get_data(all_data, "L2012.AgYield_bio_ref")
     L2012.AgProduction_ag_irr_mgmt <- get_data(all_data, "L2012.AgProduction_ag_irr_mgmt")
 
+    L2012.Deforest_LandNode5 <- L2012.AgProduction_ag_irr_mgmt %>%
+      filter(grepl("Deforest", AgSupplySector)) %>%
+      mutate(LandNode4 = gsub("_Deforest", "", AgSupplySubsector),
+             AgProductionTechnology = gsub("_hi|_lo", "", AgProductionTechnology),
+             LandNode5 = gsub("_Deforest", "",AgProductionTechnology)) %>%
+      distinct(region, LandNode4, AgProductionTechnology, LandNode5)
+
     # silence package check notes
     GCAM_commodity <- GCAM_region_ID <- region <- value <- year <- GLU <- GLU_name <- GLU_code <-
       LandLeaf <- Land_Type <- LandNode <- LandNode1 <- LandNode2 <- LandNode3 <- UnmanagedLandLeaf <-
@@ -98,7 +105,7 @@ module_aglu_L2252.land_input_5_irr_mgmt <- function(command, ...) {
       WaterContent <- Root_Shoot <- total_land <- gcam5_hist.veg.carbon.density <- new_hist.veg.carbon.density <-
       gcam5_veg.carbon.density <- new_veg.carbon.density <- dif_hist.veg <- dif_veg<- id <- GCAM_subsector <- NULL
 
-    # 1. Process inputs
+    # 1. Process inputs ---------------------------
 
     if(aglu.CARBON_DATA_SOURCE=="moirai"){
 
@@ -184,7 +191,7 @@ module_aglu_L2252.land_input_5_irr_mgmt <- function(command, ...) {
         select(-id)
     } # end remove_zero_production_land_leafs
 
-    # 2. Build tables
+    # 2. Build tables -------------------------------
     #
     # The methods in this code file will be to start with existing (landnode4) tables, and add another level of detail for management levels
     # (nitrogen application), hi and lo.
@@ -196,6 +203,8 @@ module_aglu_L2252.land_input_5_irr_mgmt <- function(command, ...) {
       mutate(LandNode5 = paste(LandNode4, Irr_Rfd, sep = aglu.IRR_DELIMITER),
              logit.exponent = aglu.MGMT_LOGIT_EXP,
              logit.type = aglu.MGMT_LOGIT_TYPE) %>%
+      left_join(L2012.Deforest_LandNode5, by = c("region", "LandNode4", "LandNode5")) %>%
+      mutate(LandNode5 = if_else(!is.na(AgProductionTechnology), AgProductionTechnology, LandNode5)) %>%
       select(LEVEL2_DATA_NAMES[["LN5_Logit"]], LOGIT_TYPE_COLNAME) ->
       L2252.LN5_Logit
 
@@ -288,15 +297,17 @@ module_aglu_L2252.land_input_5_irr_mgmt <- function(command, ...) {
              # Replace missing values with the default values
              hist.veg.carbon.density = if_else(is.na(hist.veg.carbon.density), veg.carbon.density,
                                                hist.veg.carbon.density),
-             veg.carbon.density = hist.veg.carbon.density) %>%
-      left_join(A_LandLeaf3, by = c("GCAM_subsector" = "LandLeaf")) %>%
+             veg.carbon.density = hist.veg.carbon.density,
+             GCAM_subsector_match = gsub("_Deforest", "", GCAM_subsector)) %>%
+      left_join(A_LandLeaf3, by = c("GCAM_subsector_match" = "LandLeaf")) %>%
       mutate(LandAllocatorRoot = "root",
              LandNode1 = paste(LandNode1, GLU, sep = "_"),
              LandNode2 = paste(LandNode2, GLU, sep = "_"),
              LandNode3 = paste(LandNode3, GLU, sep = "_"),
              LandNode4 = paste(GCAM_subsector, GLU, sep = "_"),
              LandLeaf = paste(LandNode4, Irr_Rfd, sep = "_")) %>%
-      convert_LN4_to_LN5(names = LEVEL2_DATA_NAMES[["LN5_MgdCarbon"]]) ->
+      convert_LN4_to_LN5(names = LEVEL2_DATA_NAMES[["LN5_MgdCarbon"]]) %>%
+      mutate(LandNode4 = gsub("_Deforest", "", LandNode4)) ->
       L2252.LN5_MgdCarbon_crop
 
     L2012.AgYield_bio_ref %>%
@@ -395,7 +406,7 @@ module_aglu_L2252.land_input_5_irr_mgmt <- function(command, ...) {
       select(c(LEVEL2_DATA_NAMES[["LN5_NodeGhostShare"]])) ->
       L2252.LN5_NodeGhostShare
 
-    # Produce outputs
+    # Produce outputs ---------------------
     L2252.LN5_Logit %>%
       add_title("Logit exponent of the fifth land nest by region") %>%
       add_units("NA") %>%

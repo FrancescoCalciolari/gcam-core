@@ -43,8 +43,16 @@ module_aglu_L2242.land_input_4_irr_mgmt <- function(command, ...) {
     A_bio_ghost_share <- get_data(all_data, "aglu/A_bio_ghost_share")
     A_LT_Mapping <- get_data(all_data, "aglu/A_LT_Mapping")
     A_LandLeaf3 <- get_data(all_data, "aglu/A_LandLeaf3")
-    L2012.AgYield_bio_ref <- get_data(all_data, "L2012.AgYield_bio_ref", strip_attributes = TRUE)
-    L2012.AgProduction_ag_irr_mgmt <- get_data(all_data, "L2012.AgProduction_ag_irr_mgmt")
+    L2012.AgYield_bio_ref <- get_data(all_data, "L2012.AgYield_bio_ref", strip_attributes = TRUE) %>%
+      mutate(AgSupplySector = gsub("_Deforest", "", AgSupplySector),
+             AgSupplySubsector = gsub("_Deforest", "", AgSupplySubsector),
+             AgProductionTechnology = gsub("_Deforest", "", AgProductionTechnology)
+             )
+    L2012.AgProduction_ag_irr_mgmt <- get_data(all_data, "L2012.AgProduction_ag_irr_mgmt")  %>%
+      mutate(AgSupplySector = gsub("_Deforest", "", AgSupplySector),
+             AgSupplySubsector = gsub("_Deforest", "", AgSupplySubsector),
+             AgProductionTechnology = gsub("_Deforest", "", AgProductionTechnology)
+      )
 
     # L2242.LN4_Logit: Logit exponent of the fourth land nest by region
     # There are no technologies that are disaggregated to irrigated and rainfed but not to lo- and hi-input techs,

@@ -2,7 +2,7 @@
 # Title: Maps GCAM land leaves to corresponding land types in carbon density databases
 # Units: NA
 # Source: Land_nesting_structure.xls
-# Column types: cc 
+# Column types: cc
 # ----------
 LandLeaf,Land_Type
 Tundra,Tundra
@@ -44,3 +44,8 @@ Vegetables,Cropland
 Wheat,Cropland
 biomassGrass,Pasture
 biomassTree,Pasture
+Coffee_Deforest,Cropland
+Cocoa_Deforest,Cropland
+OilPalmTree_Deforest,Cropland
+Rubber_Deforest,Cropland
+Soybean_Deforest,Cropland
