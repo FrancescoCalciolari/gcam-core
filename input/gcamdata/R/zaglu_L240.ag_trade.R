@@ -104,22 +104,24 @@ module_aglu_L240.ag_trade <- function(command, ...) {
       ungroup %>%
       select(GCAM_region_ID, AgSupplySector, GCAM_commodity, year, export_share)
 
-    # Share of all production that are deforest-related
-    deforest_shares_import <- L240.AgProduction %>%
-      group_by(GCAM_commodity, AgSupplySector, year) %>%
-      summarise(prod = sum(prod)) %>%
-      group_by(GCAM_commodity, year) %>%
-      filter(any(grepl("Deforest", AgSupplySector))) %>%
-      mutate(import_share = prod / sum(prod)) %>%
-      ungroup %>%
-      select(GCAM_commodity, AgSupplySector, year, import_share)
-
     # ADjust exports
     L1091.GrossTrade_Mt_R_C_Y_Export_Adj <- L1091.GrossTrade_Mt_R_C_Y_nodeforest %>%
       left_join(deforest_shares_export, by = c("GCAM_region_ID", "GCAM_commodity", "year")) %>%
       mutate(GrossExp_Mt = if_else(!is.na(export_share), export_share * GrossExp_Mt, GrossExp_Mt),
              GCAM_commodity = if_else(!is.na(AgSupplySector), AgSupplySector, GCAM_commodity)) %>%
       select(-AgSupplySector, -export_share, -GrossImp_Mt)
+
+    # Share of all production that are deforest-related
+    deforest_shares_import <- L1091.GrossTrade_Mt_R_C_Y_Export_Adj %>%
+      rename(AgSupplySector = GCAM_commodity) %>%
+      mutate(GCAM_commodity = gsub("_Deforest", "", AgSupplySector)) %>%
+      group_by(GCAM_commodity, AgSupplySector, year) %>%
+      summarise(export = sum(GrossExp_Mt )) %>%
+      group_by(GCAM_commodity, year) %>%
+      filter(any(grepl("Deforest", AgSupplySector))) %>%
+      mutate(import_share = export / sum(export)) %>%
+      ungroup %>%
+      select(GCAM_commodity, AgSupplySector, year, import_share)
 
     # Adjust imports
     L1091.GrossTrade_Mt_R_C_Y_Import_Adj <- L1091.GrossTrade_Mt_R_C_Y_nodeforest %>%
@@ -238,10 +240,38 @@ module_aglu_L240.ag_trade <- function(command, ...) {
                                                            GCAM_region_names,
                                                            by = "GCAM_region_ID") %>%
       select(region, GCAM_commodity, year, GrossExp_Mt)
-    L240.Prod_Mt_R_C_Y <- left_join_error_no_match(L109.ag_an_for_ALL_Mt_R_C_Y,
+    L240.Prod_Mt_R_C_Y <- L2012.AgProduction_ag_irr_mgmt %>%
+      group_by(region, AgSupplySector, year) %>%
+      summarise(Prod_Mt = sum(calOutputValue)) %>%
+      ungroup %>%
+      select(region, AgSupplySector, year, Prod_Mt) %>%
+      complete(region, nesting(AgSupplySector, year)) %>%
+      tidyr::replace_na(list(Prod_Mt = 0))
+
+    L240.Prod_Mt_R_C_Y_NoDeforest <- left_join_error_no_match(L109.ag_an_for_ALL_Mt_R_C_Y,
                                                    GCAM_region_names,
                                                    by = "GCAM_region_ID") %>%
       select(region, GCAM_commodity, year, Prod_Mt)
+
+    # Add in deforest crops
+    L240.Prod_Mt_R_C_Y_Deforest <- L2012.AgProduction_ag_irr_mgmt %>%
+      mutate(GCAM_commodity = gsub("_Deforest", "", AgSupplySector)) %>%
+      group_by(region, year, GCAM_commodity) %>%
+      filter(any(grepl("Deforest", AgSupplySector))) %>%
+      group_by(region, AgSupplySector, GCAM_commodity, year) %>%
+      summarise(calOutputValue = sum(calOutputValue)) %>%
+      ungroup
+
+
+    L240.Prod_Mt_R_C_Y <- L240.Prod_Mt_R_C_Y_NoDeforest %>%
+      left_join(L240.Prod_Mt_R_C_Y_Deforest, by = c("region", "GCAM_commodity", "year")) %>%
+      mutate(GCAM_commodity = if_else(!is.na(AgSupplySector), AgSupplySector, GCAM_commodity),
+             Prod_Mt = if_else(!is.na(AgSupplySector), calOutputValue, Prod_Mt)) %>%
+      select(-AgSupplySector, -calOutputValue) %>%
+      complete(region, nesting(GCAM_commodity, year)) %>%
+      tidyr::replace_na(list(Prod_Mt = 0))
+
+
     L240.Production_reg_dom <- A_agRegionalTechnology_R_Y %>%
       filter(year %in% MODEL_BASE_YEARS,
              grepl( "domestic", subsector)) %>%
@@ -251,8 +281,10 @@ module_aglu_L240.ag_trade <- function(command, ...) {
                                by = c("region", minicam.energy.input = "GCAM_commodity", "year")) %>%
       mutate(calOutputValue = Prod_Mt - GrossExp_Mt,
              share.weight.year = year,
-             subs.share.weight = if_else(calOutputValue > 0, 1, 0),
-             tech.share.weight = subs.share.weight) %>%
+             tech.share.weight = if_else(calOutputValue > 0, 1, 0)) %>%
+      group_by(supplysector, subsector, region, year) %>%
+      mutate(subs.share.weight = if_else(any(calOutputValue > 0), 1, 0)) %>%
+      ungroup %>%
       select(LEVEL2_DATA_NAMES[["Production"]])
 
     # Produce outputs ----------------------------

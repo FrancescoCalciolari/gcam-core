@@ -73,6 +73,13 @@ module_aglu_L109.ag_an_ALL_R_C_Y <- function(command, ...) {
       pull(GCAM_commodity) %>%
       unique() -> Meat_commodities
 
+    # Don't want deforested products in L101.ag_Prod_Mt_R_C_Y
+    L101.ag_Prod_Mt_R_C_Y <- L101.ag_Prod_Mt_R_C_Y %>%
+      mutate(GCAM_commodity = gsub("_Deforest", "", GCAM_commodity)) %>%
+      group_by(GCAM_region_ID, GCAM_commodity, year) %>%
+      summarise(value = sum(value)) %>%
+      ungroup
+
     # Part 1: Primary agricultural goods ----
 
     ## Combine all flow tables ----

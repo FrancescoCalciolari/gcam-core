@@ -415,6 +415,7 @@ module_aglu_L202.an_input <- function(command, ...) {
     # import share plus the local producer price times the domestic source share (1 - ImpShare)
     # For aglu.IWM_TRADED_COMM (e.g., FodderHerb), single world price won't be affected
     L202.ag_consP_R_C_75USDkg <- L1321.ag_prP_R_C_75USDkg %>%
+      filter(!grepl("Deforest", GCAM_commodity)) %>%
       rename(PrP = value) %>%
       left_join_error_no_match(L202.ag_ImpShare_Mt_R_C_Y, by = c("GCAM_region_ID", "GCAM_commodity")) %>%
       left_join_error_no_match(L202.ag_tradedP_C_75USDkg, by = "GCAM_commodity", ignore_columns = "tradedP") %>%
