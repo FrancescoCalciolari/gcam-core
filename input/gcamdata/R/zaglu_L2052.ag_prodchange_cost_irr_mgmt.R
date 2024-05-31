@@ -162,7 +162,8 @@ module_aglu_L2052.ag_prodchange_cost_irr_mgmt <- function(command, ...) {
       mutate(AgSupplySector = GCAM_commodity,
              AgSupplySubsector = paste(GCAM_commodity, GLU_name, sep = aglu.CROP_GLU_DELIMITER),
              AgProductionTechnology = AgSupplySubsector) %>%
-      left_join(L1321.expP_R_F_75USDm3, by = c("GCAM_region_ID", "GCAM_commodity", "region")) %>%
+      left_join(L1321.expP_R_F_75USDm3 %>%  bind_rows(mutate(L1321.expP_R_F_75USDm3, GCAM_commodity = paste0(GCAM_commodity, "_Deforest"))),
+                by = c("GCAM_region_ID", "GCAM_commodity", "region")) %>%
                   mutate(nonLandVariableCost = value * aglu.FOR_COST_SHARE) %>%
       select(names_AgCost) ->
       L2052.AgCost_For

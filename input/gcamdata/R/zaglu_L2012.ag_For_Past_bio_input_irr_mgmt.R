@@ -64,7 +64,7 @@ module_aglu_L2012.ag_For_Past_bio_input_irr_mgmt <- function(command, ...) {
     # Load required inputs ----
     get_data_list(all_data, MODULE_INPUTS, strip_attributes = TRUE)
 
-    # L2012.AgSupplySector: Generic AgSupplySector characteristics (units, calprice, market, logit)
+    # L2012.AgSupplySector: Generic AgSupplySector characteristics (units, calprice, market, logit) --------------------
     # Set up the regional price data to be joined in to the ag supplysector table
     L2012.P_R_C <- L1321.ag_prP_R_C_75USDkg%>%
       bind_rows(L1321.expP_R_F_75USDm3) %>%
@@ -87,7 +87,7 @@ module_aglu_L2012.ag_For_Past_bio_input_irr_mgmt <- function(command, ...) {
       filter(!region %in% aglu.NO_AGLU_REGIONS) ->
       L2012.AgSupplySector
 
-    # L2012.AgSupplySubsector: Generic AgSupplySubsector characteristics (none specified as competition is in the land allocator)
+    # L2012.AgSupplySubsector: Generic AgSupplySubsector characteristics (none specified as competition is in the land allocator) --------------------
     # At the subsector (production) level, only region x GLU combinations that actually exist are created.
     # So start with template production tables of available region x commodity x glu for all commodities.
     # First, biograss: available anywhere that has any crop production at all
@@ -131,7 +131,7 @@ module_aglu_L2012.ag_For_Past_bio_input_irr_mgmt <- function(command, ...) {
       select(LEVEL2_DATA_NAMES[["AgSupplySubsector"]], LOGIT_TYPE_COLNAME) ->
       L2012.AgSupplySubsector
 
-    # L2012.AgProduction_ag_irr_mgm: Agricultural commodities production by all technologies
+    # L2012.AgProduction_ag_irr_mgm: Agricultural commodities production by all technologies ---------------------
     # For agricultural product calibrated output, use the specific management-partitioned data
     L181.ag_Prod_Mt_R_C_Y_GLU_irr_level %>%
       filter(year %in% MODEL_BASE_YEARS) %>%
@@ -152,7 +152,7 @@ module_aglu_L2012.ag_For_Past_bio_input_irr_mgmt <- function(command, ...) {
       select(LEVEL2_DATA_NAMES[["AgProduction"]]) ->
       L2012.AgProduction_ag_irr_mgmt
 
-    # L2012.AgProduction_For and L2012.AgProduction_Past: Forest and pasture product calibration (output)
+    # L2012.AgProduction_For and L2012.AgProduction_Past: Forest and pasture product calibration (output) -------------------
     L123.For_Prod_bm3_R_Y_GLU %>%
       # Combine forest and pasture production by region x GLU
       bind_rows(L123.ag_Prod_Mt_R_Past_Y_GLU) %>%
@@ -179,7 +179,7 @@ module_aglu_L2012.ag_For_Past_bio_input_irr_mgmt <- function(command, ...) {
       select(LEVEL2_DATA_NAMES[["AgProduction"]]) ->
       L2012.AgProduction_For_Past
 
-    # L2012.AgHAtoCL_irr_mgmt: Harvested area to cropland ratio per year, by technologies
+    # L2012.AgHAtoCL_irr_mgmt: Harvested area to cropland ratio per year, by technologies ---------------
     # First add in necessary ID info to HA:CL table
     L122.ag_HA_bm2_R_Y_GLU_AnnualCHF %>%
       select(GCAM_region_ID, GLU, year, value = AnnualCropHarvestFrequency) %>%
@@ -205,7 +205,7 @@ module_aglu_L2012.ag_For_Past_bio_input_irr_mgmt <- function(command, ...) {
       ungroup() ->
       L2012.AgHAtoCL_irr_mgmt
 
-    # L2012.AgYield_bio_ref: bioenergy yields.
+    # L2012.AgYield_bio_ref: bioenergy yields. ---------------------------
     # For bio grass crops, start with data of irrigated and rainfed split;
     # For bio tree crops, use the no-tech-split data of bio grass crops,
     #  whenever it is not available, use a minimum default yield;
@@ -244,7 +244,7 @@ module_aglu_L2012.ag_For_Past_bio_input_irr_mgmt <- function(command, ...) {
       select(LEVEL2_DATA_NAMES[["AgYield"]]) ->
       L2011.AgYield_bio_grass_irr
 
-    # L201.AgYield_bio_tree: base year biomass yields, tree bioenergy crops
+    # L201.AgYield_bio_tree: base year biomass yields, tree bioenergy crops -------------------------
     # Start with the grass crop yields with no tech split where available
     L113.ag_bioYield_GJm2_R_GLU %>%
       left_join_error_no_match(GCAM_region_names, by = "GCAM_region_ID") %>%
@@ -271,7 +271,7 @@ module_aglu_L2012.ag_For_Past_bio_input_irr_mgmt <- function(command, ...) {
       select(LEVEL2_DATA_NAMES[["AgYield"]]) ->
       L201.AgYield_bio_tree
 
-    # L2011.AgYield_bio_tree_irr: yield of bioenergy tree crops (use the irr:rfd yield ratios from grass crops)
+    # L2011.AgYield_bio_tree_irr: yield of bioenergy tree crops (use the irr:rfd yield ratios from grass crops) ---------------------
     # This method essentially copies prior versions of GCAM with irrigation, albeit in a different sequence.
     # Before, we used the generic bioenergy crop yields by irr/rfd, multiplied by an assumed tree:grass yield conversion factor.
     # Here, we start with the generic tree bioenergy crop yields in each land use region,
@@ -355,7 +355,7 @@ module_aglu_L2012.ag_For_Past_bio_input_irr_mgmt <- function(command, ...) {
       select(LEVEL2_DATA_NAMES[["AgTechYr"]]) ->
       L2012.AgTechYr_Past
 
-    # Produce outputs
+    # Produce outputs -------------------------------
     L2012.AgSupplySector %>%
       add_title("Generic information for agriculture supply sectors") %>%
       add_units("Unitless") %>%
@@ -396,7 +396,7 @@ module_aglu_L2012.ag_For_Past_bio_input_irr_mgmt <- function(command, ...) {
       L2012.AgProduction_ag_irr_mgmt
 
     L2012.AgProduction_For_Past %>%
-      filter(AgSupplySector == "Forest") %>%
+      filter(grepl("Forest", AgSupplySector)) %>%
       add_title("Input table for forest production") %>%
       add_units("bm3") %>%
       add_comments("Calibrated ouputs or shareweights are not specify by technology") %>%

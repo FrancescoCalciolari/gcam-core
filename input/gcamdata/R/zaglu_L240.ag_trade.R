@@ -34,7 +34,8 @@ module_aglu_L240.ag_trade <- function(command, ...) {
       "L109.an_ALL_Mt_R_C_Y",
       "L110.For_ALL_bm3_R_Y",
       "L100.FAO_For_Exp_m3",
-      "L2012.AgProduction_ag_irr_mgmt")
+      "L2012.AgProduction_ag_irr_mgmt",
+      "L2012.AgProduction_For")
 
   MODULE_OUTPUTS <-
     c("L240.Supplysector_tra",
@@ -91,6 +92,7 @@ module_aglu_L240.ag_trade <- function(command, ...) {
     # 0b: adjust for deforest crops ---------------
     # Production by crop/region/year
     L240.AgProduction <- L2012.AgProduction_ag_irr_mgmt %>%
+      bind_rows(L2012.AgProduction_For) %>%
       group_by(region, AgSupplySector, year) %>%
       summarise(prod = sum(calOutputValue)) %>%
       ungroup %>%
@@ -241,13 +243,6 @@ module_aglu_L240.ag_trade <- function(command, ...) {
                                                            GCAM_region_names,
                                                            by = "GCAM_region_ID") %>%
       select(region, GCAM_commodity, year, GrossExp_Mt)
-    L240.Prod_Mt_R_C_Y <- L2012.AgProduction_ag_irr_mgmt %>%
-      group_by(region, AgSupplySector, year) %>%
-      summarise(Prod_Mt = sum(calOutputValue)) %>%
-      ungroup %>%
-      select(region, AgSupplySector, year, Prod_Mt) %>%
-      complete(region, nesting(AgSupplySector, year)) %>%
-      tidyr::replace_na(list(Prod_Mt = 0))
 
     L240.Prod_Mt_R_C_Y_NoDeforest <- left_join_error_no_match(L109.ag_an_for_ALL_Mt_R_C_Y,
                                                    GCAM_region_names,
@@ -256,6 +251,7 @@ module_aglu_L240.ag_trade <- function(command, ...) {
 
     # Add in deforest crops
     L240.Prod_Mt_R_C_Y_Deforest <- L2012.AgProduction_ag_irr_mgmt %>%
+      bind_rows(L2012.AgProduction_For) %>%
       mutate(GCAM_commodity = gsub("_Deforest", "", AgSupplySector)) %>%
       group_by(region, year, GCAM_commodity) %>%
       filter(any(grepl("Deforest", AgSupplySector))) %>%

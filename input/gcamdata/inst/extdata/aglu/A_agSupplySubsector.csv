@@ -39,6 +39,7 @@ SugarCrop,SugarCropC4,-6,start-year,1
 Vegetables,Vegetables,-6,start-year,1
 Wheat,Wheat,-6,start-year,1
 Forest,Forest,-6,start-year,1
+Forest_Deforest,Forest_Deforest,-6,start-year,1
 biomass,biomassGrass,-6,start-year,1
 biomass,biomassTree,-6,start-year,1
 Pasture,Pasture,-6,start-year,1

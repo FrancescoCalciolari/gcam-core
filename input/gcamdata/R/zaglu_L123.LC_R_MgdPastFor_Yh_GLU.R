@@ -57,7 +57,7 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
     Deforest_GLU_Comm <- repeat_add_columns(A_DeforestGLUs, A_DeforestCommodities) %>%
       mutate(GCAM_commodity_deforest = paste0(GCAM_commodity, "_Deforest"))
 
-    # Part 1: Pasture production, yield and managed pasture land
+    # Part 1: Pasture production, yield and managed pasture land --------------------
 
     # Calculate bottom-up estimates of total pasture grass production by region and GLU.
     # Start with total pasture land data
@@ -153,7 +153,7 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
       filter(year %in% aglu.LAND_COVER_YEARS) ->
       L123.LC_bm2_R_MgdPast_Yh_GLU
 
-    # Part 2: Forestry production, yield and managed forest land cover
+    # Part 2: Forestry production, yield and managed forest land cover ---------------------
 
     # Use average vegetation carbon densities and mature ages to estimate annual forest biomass production,
     # and used to derive exogenous yields for separating managed/unmanaged forest.
@@ -283,7 +283,7 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
       replace_na(list(value = min_forest_yield)) ->
       L123.For_Yield_m3m2_R_GLU
 
-    # Produce outputs
+    # Produce outputs -----------------------------------------
     L123.ag_Prod_Mt_R_Past_Y_GLU %>%
       left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
       mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity)) %>%
@@ -325,6 +325,9 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
       L123.ag_Yield_kgm2_R_Past_Y_GLU
 
     L123.For_Prod_bm3_R_Y_GLU %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity)) %>%
+      select(-GCAM_commodity_deforest) %>%
       add_title("Forest production by GCAM region / year / GLU") %>%
       add_units("bm3") %>%
       add_comments("Calculate potential forest biomass production by region and GLU as total forest land area times yield") %>%
@@ -338,6 +341,9 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
       L123.For_Prod_bm3_R_Y_GLU
 
     L123.LC_bm2_R_MgdFor_Yh_GLU %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "Land_Type" = "GCAM_commodity")) %>%
+      mutate(Land_Type = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, Land_Type)) %>%
+      select(-GCAM_commodity_deforest) %>%
       add_title("Managed forest land cover by GCAM region / historical year / GLU") %>%
       add_units("bm2") %>%
       add_comments("Calculate managed forest land as wood production divided by yields") %>%
@@ -349,6 +355,9 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
       L123.LC_bm2_R_MgdFor_Yh_GLU
 
     L123.For_Yield_m3m2_R_GLU %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity)) %>%
+      select(-GCAM_commodity_deforest) %>%
       add_title("Forest yield by GCAM region / year / GLU") %>%
       add_units("m2/m3") %>%
       add_comments("Calculate yields as wood production divided by adjusted managed forest land") %>%

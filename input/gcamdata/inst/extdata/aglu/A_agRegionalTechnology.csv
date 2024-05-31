@@ -63,4 +63,6 @@ regional poultry,imported poultry,imported poultry,traded poultry,1,0,1,USA
 regional sheepgoat,domestic sheepgoat,domestic sheepgoat,SheepGoat,1,0,1,regional
 regional sheepgoat,imported sheepgoat,imported sheepgoat,traded sheepgoat,1,0,1,USA
 regional forest,domestic forest,domestic forest,Forest,1,0,1,regional
+regional forest,domestic forest,domestic forest_Deforest,Forest_Deforest,1,0,1,regional
 regional forest,imported forest,imported forest,traded forest,1,0,1,USA
+regional forest,imported forest,imported forest_Deforest,traded forest_Deforest,1,0,1,USA

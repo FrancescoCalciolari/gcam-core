@@ -125,7 +125,7 @@ module_aglu_L2231.land_input_3_irr <- function(command, ...) {
       base_allocation <- prot_frac <- NULL
 
 
-    # Process inputs
+    # Process inputs -----------
     # Replace GLU names and Add region names as needed
     L121.CarbonContent_kgm2_R_LT_GLU %>%
       left_join_error_no_match(GCAM_region_names, by = "GCAM_region_ID") %>%
@@ -141,7 +141,7 @@ module_aglu_L2231.land_input_3_irr <- function(command, ...) {
 
     # Build tables
 
-    # L223.LN3_Logit: Logit exponent of the third nest.
+    # L223.LN3_Logit: Logit exponent of the third nest. -------------
     # First, Determine the node combinations applicable at this level.
     # Then, match in logit exponents based on the land node 2.
     # Finally, append GLU names and keep only relevant columns
@@ -164,7 +164,7 @@ module_aglu_L2231.land_input_3_irr <- function(command, ...) {
 
     # Land Use History
 
-    # Unmanaged land tables
+    # Unmanaged land tables ----------------
     #
     # These tables are formed from a master table, made by filtering and adding
     # node_leaf_names in L125.LC.
@@ -192,7 +192,7 @@ module_aglu_L2231.land_input_3_irr <- function(command, ...) {
       L223.LN3_UnmgdAllocation
 
 
-    # Managed land - non-crop (forest)
+    # Managed land - non-crop (forest) ------------------
     # This code will cover any land types we wish to make a `LandLeaf` at level 3 in the future.
     #
     # These tables are formed from a master table, made by filtering and adding

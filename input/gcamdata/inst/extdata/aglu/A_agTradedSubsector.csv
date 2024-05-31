@@ -34,3 +34,4 @@ traded pork,traded pork,-6,start-year,1,share-weight,final-calibration-year,end-
 traded poultry,traded poultry,-6,start-year,1,share-weight,final-calibration-year,end-year,fixed,1,
 traded sheepgoat,traded sheepgoat,-6,start-year,1,share-weight,final-calibration-year,end-year,fixed,1,
 traded forest,traded forest,-6,start-year,1,share-weight,final-calibration-year,end-year,fixed,1,
+traded forest_Deforest,traded forest_Deforest,-6,start-year,1,share-weight,final-calibration-year,end-year,fixed,1,

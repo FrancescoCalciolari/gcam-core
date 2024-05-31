@@ -341,6 +341,9 @@ module_aglu_L100.regional_ag_an_for_prices <- function(command, ...) {
       L1321.an_prP_R_C_75USDkg
 
     L1321.expP_R_F_75USDm3 %>%
+      semi_join(A_DeforestCommodities) %>%
+      mutate(GCAM_commodity = paste0(GCAM_commodity, "_Deforest")) %>%
+      bind_rows(L1321.expP_R_F_75USDm3) %>%
       add_title("Regional prices for GCAM forest commodities") %>%
       add_units("1975$/m3") %>%
       add_comments("Region-specific calibration prices by GCAM commodity and region") %>%
