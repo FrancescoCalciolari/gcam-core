@@ -48,6 +48,7 @@ AgroForestLand,AgroForest_NonPasture,CropLand,OtherArableLand,OtherArableLand,,
 AgroForestLand,AgroForest_NonPasture,GrassShrubLand,Grassland,Grassland,,
 AgroForestLand,AgroForest_NonPasture,GrassShrubLand,Shrubland,Shrubland,,
 AgroForestLand,AllPastureLand,,Pasture,Pasture,Pasture,Pasture
+AgroForestLand,AllPastureLand,,Pasture,Pasture,Pasture_Deforest,Pasture_Deforest
 AgroForestLand,AllPastureLand,,UnmanagedPasture,UnmanagedPasture,,
 RockIceDesert,,,RockIceDesert,RockIceDesert,,
 Tundra,,,Tundra,Tundra,,
