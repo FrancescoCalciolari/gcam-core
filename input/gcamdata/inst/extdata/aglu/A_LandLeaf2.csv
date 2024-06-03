@@ -6,3 +6,4 @@
 # ----------
 LandNode1,LandNode2,LandLeaf
 AgroForestLand,AllPastureLand,Pasture
+AgroForestLand,AllPastureLand,Pasture_Deforest

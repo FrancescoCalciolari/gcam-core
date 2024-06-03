@@ -7,7 +7,7 @@
 # ----------
 LandNode1,LandNode2,LandNode3,Land_Type,LandLeaf,GCAM_commodity,GCAM_subsector
 AgroForestLand,AgroForest_NonPasture,AllForestLand,Forest,Forest,Forest,Forest
-AgroForestLand,AgroForest_NonPasture,AllForestLand,Forest,Forest,Forest_Deforest,Forest_Deforest
+AgroForestLand,AgroForest_NonPasture,AllForestLand,Forest_Deforest,Forest,Forest_Deforest,Forest_Deforest
 AgroForestLand,AgroForest_NonPasture,AllForestLand,UnmanagedForest,UnmanagedForest,,
 AgroForestLand,AgroForest_NonPasture,AllForestLand,biomassTree,biomassTree,biomassTree,biomassTree
 AgroForestLand,AgroForest_NonPasture,CropLand,HarvCropLand,CornC4,Corn,CornC4
@@ -48,7 +48,7 @@ AgroForestLand,AgroForest_NonPasture,CropLand,OtherArableLand,OtherArableLand,,
 AgroForestLand,AgroForest_NonPasture,GrassShrubLand,Grassland,Grassland,,
 AgroForestLand,AgroForest_NonPasture,GrassShrubLand,Shrubland,Shrubland,,
 AgroForestLand,AllPastureLand,,Pasture,Pasture,Pasture,Pasture
-AgroForestLand,AllPastureLand,,Pasture,Pasture,Pasture_Deforest,Pasture_Deforest
+AgroForestLand,AllPastureLand,,Pasture_Deforest,Pasture,Pasture_Deforest,Pasture_Deforest
 AgroForestLand,AllPastureLand,,UnmanagedPasture,UnmanagedPasture,,
 RockIceDesert,,,RockIceDesert,RockIceDesert,,
 Tundra,,,Tundra,Tundra,,

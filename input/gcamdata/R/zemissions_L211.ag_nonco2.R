@@ -30,6 +30,7 @@ module_emissions_L211.ag_nonco2 <- function(command, ...) {
                      "L121.nonco2_tg_R_awb_C_Y_GLU",
                      "L122.ghg_tg_R_agr_C_Y_GLU",
                      "L123.bcoc_tgmt_R_awb_2000",
+                     "L202.StubTechProd_an",
                      FILE = "emissions/A11.max_reduction",
                      FILE = "emissions/A11.steepness",
                      FILE = "aglu/A_DeforestGLUs",
@@ -82,6 +83,16 @@ module_emissions_L211.ag_nonco2 <- function(command, ...) {
       select(-GCAM_commodity_deforest, -GCAM_subsector_deforest) %>%
       replace_GLU(basin_to_country_mapping)
 
+    # calculate deforest beef shares to put into L211.AnEmissions and L211.AnNH3Emissions
+    deforest_an_share <- L202.StubTechProd_an %>%
+      filter(region == "Brazil", year == 2015) %>%
+      mutate(sector_nodeforest = gsub("_Deforest", "", supplysector)) %>%
+      group_by(region, year, sector_nodeforest, subsector, stub.technology) %>%
+      mutate(share = calOutputValue / sum(calOutputValue)) %>%
+      ungroup %>%
+      tidyr::replace_na(list(share = 1)) %>%
+      select(region, year, supplysector, sector_nodeforest, subsector, stub.technology, share)
+
     # ===================================================
     # L211.AWBEmissions: Agricultural Waste Burning emissions in all regions
     L211.AWBEmissions <- L121.nonco2_tg_R_awb_C_Y_GLU %>%
@@ -128,7 +139,11 @@ module_emissions_L211.ag_nonco2 <- function(command, ...) {
       left_join_error_no_match(GCAM_region_names, by = "GCAM_region_ID") %>%
       mutate(input.emissions = round(input.emissions, emissions.DIGITS_EMISSIONS)) %>%
       select(region, supplysector, subsector, stub.technology, year, Non.CO2, input.emissions) %>%
-      filter(region != aglu.NO_AGLU_REGIONS)
+      filter(region != aglu.NO_AGLU_REGIONS) %>%
+      left_join(deforest_an_share, by = c("region", "supplysector" = "sector_nodeforest", "subsector", "stub.technology", "year")) %>%
+      mutate(input.emissions = if_else(!is.na(share), input.emissions * share, input.emissions),
+             supplysector = if_else(!is.na(supplysector.y), supplysector.y, supplysector)) %>%
+      select(LEVEL2_DATA_NAMES[["OutputEmissions"]])
 
     # L211.AnNH3Emissions: Animal NH3 emissions in all regions
     L211.AnNH3Emissions <- L115.nh3_tg_R_an_C_Sys_Fd_Yh %>%
@@ -138,7 +153,11 @@ module_emissions_L211.ag_nonco2 <- function(command, ...) {
       left_join_error_no_match(GCAM_region_names, by = "GCAM_region_ID") %>%
       mutate(input.emissions = round(input.emissions, emissions.DIGITS_EMISSIONS)) %>%
       select(region, supplysector, subsector, stub.technology, year, Non.CO2, input.emissions) %>%
-      filter(region != aglu.NO_AGLU_REGIONS)
+      filter(region != aglu.NO_AGLU_REGIONS) %>%
+      left_join(deforest_an_share, by = c("region", "supplysector" = "sector_nodeforest", "subsector", "stub.technology", "year")) %>%
+      mutate(input.emissions = if_else(!is.na(share), input.emissions * share, input.emissions),
+             supplysector = if_else(!is.na(supplysector.y), supplysector.y, supplysector)) %>%
+      select(LEVEL2_DATA_NAMES[["OutputEmissions"]])
 
     # L211.AWB_BCOC_EmissCoeff: BC / OC AWB emissions coefficients in all regions
     # Add region name & replicate for all commodities & base years
