@@ -224,11 +224,17 @@ module_aglu_L108.ag_Feed_R_C_Y <- function(command, ...) {
       msg = "aglu.Zero_Min_PastureFeed_Share_iso should have unique GCAM_region_ID is this adjustment"
     )
 
+    L101.ag_Prod_Mt_R_C_Y_FodderGrass <- L101.ag_Prod_Mt_R_C_Y %>%
+      filter(grepl("FodderGrass", GCAM_commodity)) %>%
+      group_by(GCAM_region_ID, year) %>%
+      summarise(value = sum(value)) %>%
+      ungroup %>%
+      mutate(GCAM_commodity = "FodderGrass")
+
     an_Feed_Mt_R_C_Y %>%
       filter(feed == "Pasture_FodderGrass") %>%                                                                 # Start with Pasture_FodderGrass demand
       rename(PastFodderGrass_Demand = value) %>%
-      left_join(filter(L101.ag_Prod_Mt_R_C_Y, GCAM_commodity == "FodderGrass"),
-                by = c("GCAM_region_ID", "year")) %>%                                                          # Map in FodderGrass production
+      left_join(L101.ag_Prod_Mt_R_C_Y_FodderGrass, by = c("GCAM_region_ID", "year")) %>%                        # Map in FodderGrass production
       mutate(MinPasture = if_else(GCAM_region_ID %in% aglu.Zero_Min_PastureFeed_Share_region_ID, 0,
                                   PastFodderGrass_Demand * aglu.Min_Share_PastureFeed_in_PastureFodderGrass),
              Pasture = if_else(PastFodderGrass_Demand - value < MinPasture,
