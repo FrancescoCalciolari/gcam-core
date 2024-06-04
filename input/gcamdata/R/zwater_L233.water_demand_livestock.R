@@ -43,6 +43,8 @@ module_water_L233.water_demand_livestock <- function(command, ...) {
 
     # Just read in water coefficients for all years
     L133.water_demand_livestock_R_C_W_km3_Mt %>%
+      mutate(GCAM_commodity = paste0(GCAM_commodity, "_Deforest")) %>%
+      bind_rows(L133.water_demand_livestock_R_C_W_km3_Mt) %>%
       rename(supplysector = GCAM_commodity) %>%
       inner_join(select(A_an_technology, supplysector, subsector, technology), by = "supplysector") %>%
       mutate(water_sector = "Livestock",

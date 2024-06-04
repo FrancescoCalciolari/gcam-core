@@ -192,7 +192,8 @@ module_aglu_L202.an_input <- function(command, ...) {
       semi_join(A_DeforestCommodities, by = "GCAM_commodity") %>%
       mutate(GCAM_commodity = paste0(GCAM_commodity, "_Deforest")) %>%
       left_join_error_no_match(A_an_technology %>%
-                                 distinct(GCAM_commodity = supplysector, feed = technology, minicam.energy.input)) %>%
+                                 distinct(GCAM_commodity = supplysector, feed = technology, minicam.energy.input),
+                               by = c("GCAM_commodity", "feed")) %>%
       mutate(feed = if_else(grepl("Deforest", minicam.energy.input), minicam.energy.input, feed)) %>%
       bind_rows(L202.an_FeedIO_R_C_Sys_Fd_Y.mlt) %>%
       select(-minicam.energy.input)
@@ -307,8 +308,7 @@ module_aglu_L202.an_input <- function(command, ...) {
     A_an_input_globaltech_shrwt %>%
       gather_years(value_col = "share.weight") %>%
       filter(year %in% MODEL_YEARS) %>%
-      complete(year = MODEL_YEARS, fill = list(supplysector = A_an_input_globaltech_shrwt$supplysector),
-               subsector = A_an_input_globaltech_shrwt$subsector, technology = A_an_input_globaltech_shrwt$technology) %>%
+      complete(year = MODEL_YEARS, nesting(supplysector, subsector, technology)) %>%
       mutate(share.weight = approx_fun(year, share.weight, rule = 2),
              sector.name = supplysector, subsector.name = subsector) %>%
       select(LEVEL2_DATA_NAMES[["GlobalTechYr"]], "share.weight") ->
@@ -322,7 +322,7 @@ module_aglu_L202.an_input <- function(command, ...) {
       # not every region/technology/year has a match, so need to use left_join
       left_join(L202.ag_Feed_Mt_R_C_Y.mlt, by = c("region", "technology" = "GCAM_commodity", "year")) %>%
       mutate(calOutputValue = round(value, aglu.DIGITS_CALOUTPUT)) %>%
-      na.omit %>%
+      tidyr::replace_na(list(calOutputValue = 0)) %>%
       # subsector and technology shareweights (subsector requires the year as well)
       mutate(share.weight.year = year,
              subs.share.weight = if_else(calOutputValue > 0, 1, 0),
