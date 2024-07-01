@@ -285,7 +285,7 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
 
     # Produce outputs -----------------------------------------
     L123.ag_Prod_Mt_R_Past_Y_GLU %>%
-      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity", "GCAM_region_ID")) %>%
       mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity)) %>%
       select(-GCAM_commodity_deforest) %>%
       add_title("Pasture production by GCAM region / year / GLU") %>%
@@ -300,7 +300,7 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
       L123.ag_Prod_Mt_R_Past_Y_GLU
 
     L123.LC_bm2_R_MgdPast_Yh_GLU %>%
-      left_join(Deforest_GLU_Comm, by = c("GLU", "Land_Type" = "GCAM_commodity")) %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "Land_Type" = "GCAM_commodity", "GCAM_region_ID")) %>%
       mutate(Land_Type = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, Land_Type)) %>%
       select(-GCAM_commodity_deforest) %>%
       add_title("Managed pasture land cover by GCAM region / historical year / GLU") %>%
@@ -313,7 +313,7 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
       L123.LC_bm2_R_MgdPast_Yh_GLU
 
     L123.ag_Yield_kgm2_R_Past_Y_GLU %>%
-      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity", "GCAM_region_ID")) %>%
       mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity)) %>%
       select(-GCAM_commodity_deforest) %>%
       add_title("Pasture yield by GCAM region / year / GLU") %>%
@@ -325,7 +325,7 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
       L123.ag_Yield_kgm2_R_Past_Y_GLU
 
     L123.For_Prod_bm3_R_Y_GLU %>%
-      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity", "GCAM_region_ID")) %>%
       mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity)) %>%
       select(-GCAM_commodity_deforest) %>%
       add_title("Forest production by GCAM region / year / GLU") %>%
@@ -341,7 +341,7 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
       L123.For_Prod_bm3_R_Y_GLU
 
     L123.LC_bm2_R_MgdFor_Yh_GLU %>%
-      left_join(Deforest_GLU_Comm, by = c("GLU", "Land_Type" = "GCAM_commodity")) %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "Land_Type" = "GCAM_commodity", "GCAM_region_ID")) %>%
       mutate(Land_Type = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, Land_Type)) %>%
       select(-GCAM_commodity_deforest) %>%
       add_title("Managed forest land cover by GCAM region / historical year / GLU") %>%
@@ -355,7 +355,7 @@ module_aglu_L123.LC_R_MgdPastFor_Yh_GLU <- function(command, ...) {
       L123.LC_bm2_R_MgdFor_Yh_GLU
 
     L123.For_Yield_m3m2_R_GLU %>%
-      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity", "GCAM_region_ID")) %>%
       mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity)) %>%
       select(-GCAM_commodity_deforest) %>%
       add_title("Forest yield by GCAM region / year / GLU") %>%

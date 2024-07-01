@@ -1,9 +1,9 @@
 # File: A_DeforestGLUs.csv
 # Title: GLUs with deforestation crops
 # Unit: NA
-# Column types: c
+# Column types: ic
 # ----------
-GLU
-GLU195
-GLU158
-GLU148
+GCAM_region_ID, GLU
+7,GLU195
+18,GLU158
+29,GLU148

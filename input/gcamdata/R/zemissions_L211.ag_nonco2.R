@@ -65,19 +65,19 @@ module_emissions_L211.ag_nonco2 <- function(command, ...) {
              GCAM_subsector_deforest = if_else(GCAM_commodity == "OilPalm", "OilPalmTree_Deforest", GCAM_commodity_deforest))
     ## Put in deforestation crops to emissions inputs
     L121.nonco2_tg_R_awb_C_Y_GLU <- L121.nonco2_tg_R_awb_C_Y_GLU %>%
-      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity", "GCAM_region_ID")) %>%
       mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity),
              GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_subsector_deforest, GCAM_subsector)) %>%
       select(-GCAM_commodity_deforest, -GCAM_subsector_deforest) %>%
       replace_GLU(basin_to_country_mapping)
     L122.ghg_tg_R_agr_C_Y_GLU <- L122.ghg_tg_R_agr_C_Y_GLU %>%
-      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity", "GCAM_region_ID")) %>%
       mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity),
              GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_subsector_deforest, GCAM_subsector)) %>%
       select(-GCAM_commodity_deforest, -GCAM_subsector_deforest) %>%
       replace_GLU(basin_to_country_mapping)
     L123.bcoc_tgmt_R_awb_2000 <- L123.bcoc_tgmt_R_awb_2000 %>%
-      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity", "GCAM_region_ID")) %>%
       mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity),
              GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_subsector_deforest, GCAM_subsector)) %>%
       select(-GCAM_commodity_deforest, -GCAM_subsector_deforest) %>%

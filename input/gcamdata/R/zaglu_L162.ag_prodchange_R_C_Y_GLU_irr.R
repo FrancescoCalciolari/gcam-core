@@ -237,7 +237,7 @@ module_aglu_L162.ag_prodchange_R_C_Y_GLU_irr <- function(command, ...) {
       mutate(YieldRatio = Prod_mod / HA) %>%
       na.omit() %>%
       select(GCAM_region_ID, GCAM_commodity, GCAM_subsector, year, GLU, Irr_Rfd, YieldRatio) %>%
-      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity", "GCAM_region_ID")) %>%
       mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity),
              GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_subsector_deforest, GCAM_subsector)) %>%
       select(-GCAM_commodity_deforest, -GCAM_subsector_deforest)->

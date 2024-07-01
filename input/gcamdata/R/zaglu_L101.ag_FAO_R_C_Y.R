@@ -159,7 +159,7 @@ module_aglu_L101.ag_FAO_R_C_Y <- function(command, ...) {
     assertthat::assert_that(nrow(in_out_prod_area) == 0, msg = "Check inconsistency in Production downscale to GLU.")
 
     FAO_PRODSTAT_DOWNSCALED_new <-  FAO_PRODSTAT_DOWNSCALED_new %>%
-      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity")) %>%
+      left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity", "GCAM_region_ID")) %>%
       mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity),
              GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_subsector_deforest, GCAM_subsector)) %>%
       select(-GCAM_commodity_deforest, -GCAM_subsector_deforest)
