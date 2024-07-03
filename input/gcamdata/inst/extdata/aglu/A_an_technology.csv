@@ -44,3 +44,7 @@ SheepGoat,Pastoral,FodderHerb_Residue,share-weight,final-calibration-year,end-ye
 SheepGoat,Pastoral,Pasture_FodderGrass,share-weight,final-calibration-year,end-year,fixed,Pasture_FodderGrass
 SheepGoat,Pastoral,FeedCrops,share-weight,final-calibration-year,end-year,fixed,FeedCrops
 SheepGoat,Pastoral,Scavenging_Other,share-weight,final-calibration-year,end-year,fixed,Scavenging_Other
+Dairy,Mixed,Pasture_FodderGrass_Deforest,share-weight,final-calibration-year,end-year,fixed,Pasture_FodderGrass_Deforest
+SheepGoat,Mixed,Pasture_FodderGrass_Deforest,share-weight,final-calibration-year,end-year,fixed,Pasture_FodderGrass_Deforest
+Dairy,Pastoral,Pasture_FodderGrass_Deforest,share-weight,final-calibration-year,end-year,fixed,Pasture_FodderGrass_Deforest
+SheepGoat,Pastoral,Pasture_FodderGrass_Deforest,share-weight,final-calibration-year,end-year,fixed,Pasture_FodderGrass_Deforest

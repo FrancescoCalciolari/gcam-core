@@ -46,7 +46,8 @@ module_aglu_L202.an_input <- function(command, ...) {
       "L1321.an_prP_R_C_75USDkg",
       "L233.TechCoef",
       "L2012.AgProduction_ag_irr_mgmt",
-      "L2012.AgProduction_Past")
+      "L2012.AgProduction_Past",
+      "L203.StubTechProd_nonfood_crop")
 
   MODULE_OUTPUTS <-
     c("L202.RenewRsrc",
@@ -163,6 +164,13 @@ module_aglu_L202.an_input <- function(command, ...) {
         filter(year %in% MODEL_BASE_YEARS)
     }
 
+    # will need to subtract any foddergrass that goes into nonfood
+    Past_Fodder_NonFood <- L203.StubTechProd_nonfood_crop %>%
+      filter(stub.technology %in% c("Pasture", "FodderGrass")) %>%
+      group_by(region, stub.technology, year) %>%
+      summarise(nonfood = sum(calOutputValue)) %>%
+      ungroup
+
     deforest_feed_share <-  bind_rows(L2012.AgProduction_ag_irr_mgmt,
                                 L2012.AgProduction_Past) %>%
       mutate(Sector_NoDeforest = gsub("_Deforest", "", AgSupplySector)) %>%
@@ -170,6 +178,10 @@ module_aglu_L202.an_input <- function(command, ...) {
       filter(any(grepl("_Deforest", AgSupplySector))) %>%
       group_by(region, AgSupplySector, Sector_NoDeforest, year) %>%
       summarise(calOutputValue = sum(calOutputValue)) %>%
+      ungroup %>%
+      left_join(Past_Fodder_NonFood, by = c("region", "year", "AgSupplySector" = "stub.technology")) %>%
+      mutate(calOutputValue = if_else(is.na(nonfood), calOutputValue, calOutputValue - nonfood)) %>%
+      select(-nonfood) %>%
       group_by(region, Sector_NoDeforest, year) %>%
       mutate(share_output = calOutputValue / sum(calOutputValue)) %>%
       ungroup %>%
@@ -187,10 +199,24 @@ module_aglu_L202.an_input <- function(command, ...) {
       left_join_error_no_match(GCAM_region_names, by = "GCAM_region_ID") %>%
       filter(year %in% MODEL_BASE_YEARS)
 
+    Deforest_Feed <- A_an_technology %>%
+      filter(grepl("Deforest", technology)) %>%
+      distinct(supplysector, technology)
+
     # Add in deforest techs
     L202.an_FeedIO_R_C_Sys_Fd_Y.mlt <- L202.an_FeedIO_R_C_Sys_Fd_Y.mlt %>%
-      semi_join(A_DeforestCommodities, by = "GCAM_commodity") %>%
-      mutate(GCAM_commodity = paste0(GCAM_commodity, "_Deforest")) %>%
+      # Filter to the correct commodities
+      # For Dairy and SheepGoat, the commodity is not labelled as "Deforested", only the tech
+      # Here we are only interested in the deforested techs
+      filter(GCAM_commodity %in% A_DeforestCommodities$GCAM_commodity |
+               (GCAM_commodity %in% Deforest_Feed$supplysector &
+               feed %in% gsub("_Deforest", "",Deforest_Feed$technology))) %>%
+      mutate(GCAM_commodity = if_else(GCAM_commodity %in% A_DeforestCommodities$GCAM_commodity,
+                                      paste0(GCAM_commodity, "_Deforest"),
+                                      GCAM_commodity),
+             feed = if_else(GCAM_commodity %in% Deforest_Feed$supplysector,
+                            paste0(feed, "_Deforest"),
+                            feed)) %>%
       left_join_error_no_match(A_an_technology %>%
                                  distinct(GCAM_commodity = supplysector, feed = technology, minicam.energy.input),
                                by = c("GCAM_commodity", "feed")) %>%
@@ -334,41 +360,62 @@ module_aglu_L202.an_input <- function(command, ...) {
     # Calculate share of deforest in pasture_foddergrass in Beef
     # will use this share to determine share of animal output with deforest product
     # First get total feed consumed by deforest animals (Beef)
-    an_deforest_feed <- L202.an_Feed_Mt_R_C_Sys_Fd_Y.mlt %>%
-      filter(GCAM_commodity %in% A_DeforestCommodities$GCAM_commodity) %>%
-      group_by(GCAM_region_ID, year, region, GCAM_commodity, feed) %>%
-      summarise(value = sum(value)) %>%
+    Past_Deforest <- L202.StubTechProd_in %>%
+      # this only works if the only deforest feed is Pasture_FodderGrass
+      filter(grepl("Pasture_FodderGrass_Deforest", supplysector)) %>%
+      group_by(region, supplysector, year) %>%
+      summarise(calOutputValue = sum(calOutputValue)) %>%
       ungroup
 
-    an_deforest_share <- L202.StubTechProd_in %>%
-      filter(grepl("Deforest", supplysector)) %>%
-      mutate(feed = gsub("_Deforest", "",  supplysector)) %>%
-      group_by(region, year, feed) %>%
-      summarise(calOutputValue = sum(calOutputValue)) %>%
+    # Get deforest animal feed share
+    L202.an_Feed_Deforest_Share <- L202.an_Feed_Mt_R_C_Sys_Fd_Y.mlt %>%
+      filter(feed == "Pasture_FodderGrass") %>%
+      group_by(region, year, GCAM_commodity, feed) %>%
+      summarise(value = sum(value)) %>%
       ungroup %>%
-      left_join(an_deforest_feed, by = c("region", "year", "feed")) %>%
-      mutate(share = calOutputValue / value,
-             deforest_commodity = paste0(GCAM_commodity, "_Deforest")) %>%
-      select(region, GCAM_region_ID, year, GCAM_commodity, deforest_commodity, share)
+      left_join_error_no_match(Past_Deforest, by = c("year", "region")) %>%
+      group_by(region, year, feed, supplysector) %>%
+      mutate(DeforestValue = if_else(GCAM_commodity == "Beef",
+                                      # if GCAM_commodity is beef, take min of calOutputValue and Beef
+                                      pmin(value, calOutputValue),
+                                      # if GCAM_commodity isn't beef, multiply remainder by non-beef share (or zero)
+                                      pmax(0, value / sum(value[GCAM_commodity != "Beef"]) * (calOutputValue - value[GCAM_commodity == "Beef"])))) %>%
+      ungroup %>%
+      mutate(defor_share = if_else(value != 0, DeforestValue / value, 0)) %>%
+      # mutate(GCAM_commodity = gsub("Beef", "Beef_Deforest", GCAM_commodity)) %>%
+      select(region, year, GCAM_commodity, defor_share)
 
-    # add the non-deforest commodity so that we can multiply both by the appropriate share
-    an_deforest_share <- an_deforest_share %>%
-      mutate(deforest_commodity = GCAM_commodity,
-             share = 1 - share) %>%
-      bind_rows(an_deforest_share)
-
-    # Add deforest techs to L202.an_Prod_Mt_R_C_Sys_Fd_Y.mlt and L202.an_Feed_Mt_R_C_Sys_Fd_Y.mlt
-    L202.an_Prod_Mt_R_C_Sys_Fd_Y_Deforest <- L202.an_Prod_Mt_R_C_Sys_Fd_Y.mlt %>%
-      left_join(an_deforest_share, c("GCAM_commodity", "region", "year", "GCAM_region_ID")) %>%
-      mutate(value = if_else(!is.na(share), value * share, value),
-             GCAM_commodity = if_else(!is.na(deforest_commodity), deforest_commodity, GCAM_commodity)) %>%
-      select(-deforest_commodity, -share)
-
+    # ADJUST FEED
+    # Get deforest animal feed consumption
     L202.an_Feed_Mt_R_C_Sys_Fd_Y_Deforest <- L202.an_Feed_Mt_R_C_Sys_Fd_Y.mlt %>%
-      left_join(an_deforest_share, c("GCAM_commodity", "region", "year", "GCAM_region_ID")) %>%
-      mutate(value = if_else(!is.na(share), value * share, value),
-             GCAM_commodity = if_else(!is.na(deforest_commodity), deforest_commodity, GCAM_commodity)) %>%
-      select(-deforest_commodity, -share)
+      left_join(L202.an_Feed_Deforest_Share, by = c("year", "GCAM_commodity", "region")) %>%
+      filter(GCAM_commodity == "Beef" | feed == "Pasture_FodderGrass") %>%
+      mutate(value = value * defor_share,
+             GCAM_commodity = gsub("Beef", "Beef_Deforest", GCAM_commodity),
+             feed = if_else(GCAM_commodity != "Beef_Deforest", gsub("Pasture_FodderGrass", "Pasture_FodderGrass_Deforest", feed), feed))
+
+    # Now subtract deforest feed from normal feed/commodities using shares and add in the deforest
+    L202.an_Feed_Mt_R_C_Sys_Fd_Y <- L202.an_Feed_Mt_R_C_Sys_Fd_Y.mlt %>%
+      left_join(L202.an_Feed_Deforest_Share, by = c("year", "GCAM_commodity", "region")) %>%
+      mutate(value = if_else(GCAM_commodity == "Beef" | feed == "Pasture_FodderGrass", value * (1 - defor_share), value)) %>%
+      bind_rows(L202.an_Feed_Mt_R_C_Sys_Fd_Y_Deforest) %>%
+      select(-defor_share)
+
+    # ADJUST AN PROD
+    # Add up all of the deforest animal product
+    L202.an_Prod_Mt_R_C_Sys_Fd_Y_Deforest <- L202.an_Prod_Mt_R_C_Sys_Fd_Y.mlt %>%
+      left_join_error_no_match(L202.an_Feed_Deforest_Share, by = c("year", "GCAM_commodity","region")) %>%
+      filter(GCAM_commodity == "Beef" | feed == "Pasture_FodderGrass") %>%
+      mutate(value = value * defor_share,
+             GCAM_commodity = gsub("Beef", "Beef_Deforest", GCAM_commodity),
+             feed = if_else(GCAM_commodity != "Beef_Deforest", gsub("Pasture_FodderGrass", "Pasture_FodderGrass_Deforest", feed), feed))
+
+    # Now subtract deforest an prod from normal prod using shares and add in the deforested prod
+    L202.an_Prod_Mt_R_C_Sys_Fd_Y <- L202.an_Prod_Mt_R_C_Sys_Fd_Y.mlt %>%
+      left_join(L202.an_Feed_Deforest_Share, by = c("year", "GCAM_commodity", "region")) %>%
+      mutate(value = if_else(GCAM_commodity == "Beef" | feed == "Pasture_FodderGrass", value * (1 - defor_share), value)) %>%
+      bind_rows(L202.an_Prod_Mt_R_C_Sys_Fd_Y_Deforest) %>%
+      select(-defor_share)
     #
     # Animal output ---------------------------
     # L202.Supplysector_an: generic animal production supplysector info (159-162)
@@ -401,7 +448,7 @@ module_aglu_L202.an_input <- function(command, ...) {
       write_to_all_regions(LEVEL2_DATA_NAMES[["Tech"]], GCAM_region_names) %>%
       rename(stub.technology = technology) %>%
       repeat_add_columns(tibble(year = MODEL_BASE_YEARS)) %>%
-      left_join(L202.an_Prod_Mt_R_C_Sys_Fd_Y_Deforest %>%
+      left_join(L202.an_Prod_Mt_R_C_Sys_Fd_Y %>%
                   select(region, supplysector = GCAM_commodity, year,
                          subsector = system, stub.technology = feed, value),
                 by = c("region", "supplysector", "subsector", "stub.technology", "year")) %>%
@@ -533,6 +580,11 @@ module_aglu_L202.an_input <- function(command, ...) {
       select(region, supplysector, price) ->
       L202.ag_FeedCost_USDkg_R_F
 
+    # add deforest feed
+    L202.ag_FeedCost_USDkg_R_F <- L202.ag_FeedCost_USDkg_R_F %>%
+      mutate(supplysector = paste0(supplysector, "_Deforest")) %>%
+      bind_rows(L202.ag_FeedCost_USDkg_R_F)
+
     # gpk 8/5/2020 - compute default animal commodity prices in case of missing values
 
     # Median prices, to be used elsewhere
@@ -551,11 +603,11 @@ module_aglu_L202.an_input <- function(command, ...) {
       L202.an_WaterCost
 
     # Calculate the total cost of all inputs, for each animal commodity, first matching in the feed quantity and the price
-    L202.an_Prod_Mt_R_C_Sys_Fd_Y_Deforest %>%
+    L202.an_Prod_Mt_R_C_Sys_Fd_Y %>%
       filter(year == max(MODEL_BASE_YEARS),
              !region %in% aglu.NO_AGLU_REGIONS) %>%
       rename(Prod_Mt = value) %>%
-      left_join_error_no_match(select(L202.an_Feed_Mt_R_C_Sys_Fd_Y_Deforest, GCAM_region_ID, GCAM_commodity, system, feed, year, Feed_Mt = value),
+      left_join_error_no_match(select(L202.an_Feed_Mt_R_C_Sys_Fd_Y, GCAM_region_ID, GCAM_commodity, system, feed, year, Feed_Mt = value),
                                by = c("GCAM_region_ID", "GCAM_commodity", "system", "feed", "year")) %>%
       left_join_error_no_match(L202.ag_FeedCost_USDkg_R_F, by = c("region", "feed" = "supplysector")) %>%
       rename(FeedPrice_USDkg = price) %>%
@@ -650,7 +702,7 @@ module_aglu_L202.an_input <- function(command, ...) {
       mutate(stub.technology = technology,
              minicam.non.energy.input = "non-feed") %>%
       # only want deforest crops if in the region
-      semi_join(L202.an_Prod_Mt_R_C_Sys_Fd_Y_Deforest, by = c("region", "supplysector" = "GCAM_commodity")) %>%
+      semi_join(L202.an_Prod_Mt_R_C_Sys_Fd_Y, by = c("region", "supplysector" = "GCAM_commodity")) %>%
       left_join_error_no_match(L202.an_nonFeedCost_R_C_3 %>%
                   select(region, supplysector = GCAM_commodity, subsector = system,
                          stub.technology = feed, nonFeedCost),

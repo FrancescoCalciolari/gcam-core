@@ -63,6 +63,7 @@ module_emissions_L211.ag_nonco2 <- function(command, ...) {
     Deforest_GLU_Comm <- repeat_add_columns(A_DeforestGLUs, A_DeforestCommodities) %>%
       mutate(GCAM_commodity_deforest = paste0(GCAM_commodity, "_Deforest"),
              GCAM_subsector_deforest = if_else(GCAM_commodity == "OilPalm", "OilPalmTree_Deforest", GCAM_commodity_deforest))
+
     ## Put in deforestation crops to emissions inputs
     L121.nonco2_tg_R_awb_C_Y_GLU <- L121.nonco2_tg_R_awb_C_Y_GLU %>%
       left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity", "GCAM_region_ID")) %>%
@@ -70,12 +71,14 @@ module_emissions_L211.ag_nonco2 <- function(command, ...) {
              GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_subsector_deforest, GCAM_subsector)) %>%
       select(-GCAM_commodity_deforest, -GCAM_subsector_deforest) %>%
       replace_GLU(basin_to_country_mapping)
+
     L122.ghg_tg_R_agr_C_Y_GLU <- L122.ghg_tg_R_agr_C_Y_GLU %>%
       left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity", "GCAM_region_ID")) %>%
       mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity),
              GCAM_subsector = if_else(!is.na(GCAM_commodity_deforest), GCAM_subsector_deforest, GCAM_subsector)) %>%
       select(-GCAM_commodity_deforest, -GCAM_subsector_deforest) %>%
       replace_GLU(basin_to_country_mapping)
+
     L123.bcoc_tgmt_R_awb_2000 <- L123.bcoc_tgmt_R_awb_2000 %>%
       left_join(Deforest_GLU_Comm, by = c("GLU", "GCAM_commodity", "GCAM_region_ID")) %>%
       mutate(GCAM_commodity = if_else(!is.na(GCAM_commodity_deforest), GCAM_commodity_deforest, GCAM_commodity),
@@ -85,7 +88,6 @@ module_emissions_L211.ag_nonco2 <- function(command, ...) {
 
     # calculate deforest beef shares to put into L211.AnEmissions and L211.AnNH3Emissions
     deforest_an_share <- L202.StubTechProd_an %>%
-      filter(region == "Brazil", year == 2015) %>%
       mutate(sector_nodeforest = gsub("_Deforest", "", supplysector)) %>%
       group_by(region, year, sector_nodeforest, subsector, stub.technology) %>%
       mutate(share = calOutputValue / sum(calOutputValue)) %>%
@@ -93,6 +95,23 @@ module_emissions_L211.ag_nonco2 <- function(command, ...) {
       tidyr::replace_na(list(share = 1)) %>%
       select(region, year, supplysector, sector_nodeforest, subsector, stub.technology, share)
 
+    # calculate deforest feed shares to put into L211.AnEmissions and L211.AnNH3Emissions
+    deforest_feed <- L202.StubTechProd_an %>%
+      filter(grepl("Deforest", stub.technology)) %>%
+      distinct(supplysector, subsector, tech =  stub.technology) %>%
+      mutate(tech_nodeforest = gsub("_Deforest", "", tech ))
+
+    deforest_feed_share <- L202.StubTechProd_an %>%
+      mutate(tech_nodeforest = gsub("_Deforest", "", stub.technology)) %>%
+      semi_join(deforest_feed, by = c("supplysector", "subsector")) %>%
+      filter(stub.technology %in% c(deforest_feed$tech, deforest_feed$tech_nodeforest)) %>%
+      group_by(region, year, supplysector, subsector, tech_nodeforest) %>%
+      mutate(share_feed = calOutputValue / sum(calOutputValue)) %>%
+      ungroup %>%
+      tidyr::replace_na(list(share = 1)) %>%
+      select(region, year, supplysector, subsector, stub.technology, tech_nodeforest, share_feed)
+
+    #
     # ===================================================
     # L211.AWBEmissions: Agricultural Waste Burning emissions in all regions
     L211.AWBEmissions <- L121.nonco2_tg_R_awb_C_Y_GLU %>%
@@ -140,9 +159,13 @@ module_emissions_L211.ag_nonco2 <- function(command, ...) {
       mutate(input.emissions = round(input.emissions, emissions.DIGITS_EMISSIONS)) %>%
       select(region, supplysector, subsector, stub.technology, year, Non.CO2, input.emissions) %>%
       filter(region != aglu.NO_AGLU_REGIONS) %>%
+      # Add in deforest sector (Beef) emissions
       left_join(deforest_an_share, by = c("region", "supplysector" = "sector_nodeforest", "subsector", "stub.technology", "year")) %>%
+      left_join(deforest_feed_share, by = c("region", "supplysector", "subsector", "stub.technology" = "tech_nodeforest", "year")) %>%
       mutate(input.emissions = if_else(!is.na(share), input.emissions * share, input.emissions),
-             supplysector = if_else(!is.na(supplysector.y), supplysector.y, supplysector)) %>%
+             input.emissions = if_else(!is.na(share_feed), input.emissions * share_feed, input.emissions),
+             supplysector = if_else(!is.na(supplysector.y), supplysector.y, supplysector),
+             stub.technology = if_else(!is.na(stub.technology.y), stub.technology.y, stub.technology)) %>%
       select(LEVEL2_DATA_NAMES[["OutputEmissions"]])
 
     # L211.AnNH3Emissions: Animal NH3 emissions in all regions
@@ -154,9 +177,13 @@ module_emissions_L211.ag_nonco2 <- function(command, ...) {
       mutate(input.emissions = round(input.emissions, emissions.DIGITS_EMISSIONS)) %>%
       select(region, supplysector, subsector, stub.technology, year, Non.CO2, input.emissions) %>%
       filter(region != aglu.NO_AGLU_REGIONS) %>%
+      # Add in deforest sector (Beef) emissions
       left_join(deforest_an_share, by = c("region", "supplysector" = "sector_nodeforest", "subsector", "stub.technology", "year")) %>%
+      left_join(deforest_feed_share, by = c("region", "supplysector", "subsector", "stub.technology" = "tech_nodeforest", "year")) %>%
       mutate(input.emissions = if_else(!is.na(share), input.emissions * share, input.emissions),
-             supplysector = if_else(!is.na(supplysector.y), supplysector.y, supplysector)) %>%
+             input.emissions = if_else(!is.na(share_feed), input.emissions * share_feed, input.emissions),
+             supplysector = if_else(!is.na(supplysector.y), supplysector.y, supplysector),
+             stub.technology = if_else(!is.na(stub.technology.y), stub.technology.y, stub.technology)) %>%
       select(LEVEL2_DATA_NAMES[["OutputEmissions"]])
 
     # L211.AWB_BCOC_EmissCoeff: BC / OC AWB emissions coefficients in all regions
