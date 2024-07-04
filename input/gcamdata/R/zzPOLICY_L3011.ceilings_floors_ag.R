@@ -42,7 +42,7 @@ module_policy_L3011.ceilings_floors_ag <- function(command, ...) {
       # remove techs with all calOutput 0 - this assumes if there was no past import/dom prod
       # there will be none in future as well
       group_by(region, supplysector, subsector, technology) %>%
-      filter(!all(calOutputValue == 0)) %>%
+      # filter(!all(calOutputValue == 0)) %>%
       ungroup %>%
       distinct(region, supplysector, subsector, technology)
 
@@ -72,19 +72,19 @@ module_policy_L3011.ceilings_floors_ag <- function(command, ...) {
       left_join(policy_tech_mappings, by = "tech_mapping") %>%
       select(region, market, policy.portfolio.standard, policyType, supplysector, subsector, technology = stub.technology, year, constraint)
 
-    # Need to drop techs that don't exist, write them out here
-    tech_remove <- L3011.ceilings_floors %>%
-      anti_join(L3011.Tech_All, by = c("region", "supplysector", "subsector", "technology")) %>%
-      distinct(region, supplysector, subsector, technology)
-
-    if (nrow(tech_remove) > 0){
-      print("Constraint removed for the following sectors:")
-      for(i in 1:nrow(tech_remove)){
-        print(paste(tech_remove[i,], collapse = "---"))
-      }
-      L3011.ceilings_floors <- L3011.ceilings_floors %>%
-        anti_join(tech_remove, by = c("region", "supplysector", "subsector", "technology"))
-    }
+    # # Need to drop techs that don't exist, write them out here
+    # tech_remove <- L3011.ceilings_floors %>%
+    #   anti_join(L3011.Tech_All, by = c("region", "supplysector", "subsector", "technology")) %>%
+    #   distinct(region, supplysector, subsector, technology)
+    #
+    # if (nrow(tech_remove) > 0){
+    #   print("Constraint removed for the following sectors:")
+    #   for(i in 1:nrow(tech_remove)){
+    #     print(paste(tech_remove[i,], collapse = "---"))
+    #   }
+    #   L3011.ceilings_floors <- L3011.ceilings_floors %>%
+    #     anti_join(tech_remove, by = c("region", "supplysector", "subsector", "technology"))
+    # }
 
     # 2. Create policy portfolio standard tables --------------------
     L3011.policy_port_stnd <- L3011.ceilings_floors %>%

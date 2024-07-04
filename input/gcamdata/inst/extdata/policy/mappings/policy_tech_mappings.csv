@@ -566,3 +566,15 @@ SOYBEAN_CONSUME,regional soybean,imported soybean,imported soybean
 SOYBEAN_CONSUME,regional soybean,domestic soybean,domestic soybean
 FOREST_CONSUME,regional forest,imported forest,imported forest
 FOREST_CONSUME,regional forest,domestic forest,domestic forest
+PALMOIL_CONSUME,regional oilpalm,imported oilpalm,imported oilpalm_Deforest
+PALMOIL_CONSUME,regional oilpalm,domestic oilpalm,domestic oilpalm_Deforest
+COCOA_CONSUME,regional cocoa,imported cocoa,imported cocoa_Deforest
+COCOA_CONSUME,regional cocoa,domestic cocoa,domestic cocoa_Deforest
+COFFEE_CONSUME,regional coffee,imported coffee,imported coffee_Deforest
+COFFEE_CONSUME,regional coffee,domestic coffee,domestic coffee_Deforest
+RUBBER_CONSUME,regional rubber,imported rubber,imported rubber_Deforest
+RUBBER_CONSUME,regional rubber,domestic rubber,domestic rubber_Deforest
+SOYBEAN_CONSUME,regional soybean,imported soybean,imported soybean_Deforest
+SOYBEAN_CONSUME,regional soybean,domestic soybean,domestic soybean_Deforest
+FOREST_CONSUME,regional forest,imported forest,imported forest_Deforest
+FOREST_CONSUME,regional forest,domestic forest,domestic forest_Deforest
