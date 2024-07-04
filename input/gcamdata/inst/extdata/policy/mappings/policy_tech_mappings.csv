@@ -578,3 +578,7 @@ SOYBEAN_CONSUME,regional soybean,imported soybean,imported soybean_Deforest
 SOYBEAN_CONSUME,regional soybean,domestic soybean,domestic soybean_Deforest
 FOREST_CONSUME,regional forest,imported forest,imported forest_Deforest
 FOREST_CONSUME,regional forest,domestic forest,domestic forest_Deforest
+BEEF_CONSUME,regional beef,imported beef,imported beef
+BEEF_CONSUME,regional beef,domestic beef,domestic beef
+BEEF_CONSUME,regional beef,imported beef,imported beef_Deforest
+BEEF_CONSUME,regional beef,domestic beef,domestic beef_Deforest
