@@ -472,6 +472,8 @@ generate_level2_data_names <- function() {
   level2_data_names[["GHGConstrLink"]] <- c("region", "linked.ghg.policy", "price.adjust", "demand.adjust", "market", "linked.policy", "price.unit", "output.unit")
   level2_data_names[["GHGConstrLinkAdj"]] <- c("region", "linked.ghg.policy", "price.adjust.year.fillout", "price.adjust",  "demand.adjust.year.fillout", "demand.adjust")
   level2_data_names[["GHGConstrLinkMkt"]] <- c("region", "linked.ghg.policy", "market", "linked.policy")
+  level2_data_names[["TechInputTax"]] <- c(level2_data_names[["TechYr"]], "input.tax")
+  level2_data_names[["TechInputSubsidy"]] <- c(level2_data_names[["TechYr"]], "input.subsidy")
 
   level2_data_names
 }

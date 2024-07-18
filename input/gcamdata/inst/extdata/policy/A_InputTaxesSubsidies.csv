@@ -1,0 +1,9 @@
+# File: A_InputTaxesSubsidies.csv
+# Title: Taxes/Subsidies for Specific Technologies
+# Units: 1975$/GJ
+# Comments: Positive for tax, negative for subsidy
+# Column types: ccccccnnnnnnnn
+# ----------
+xml,region,supplysector,subsector,stub.technology,minicam.non.energy.input,2020,2025,2030,2035,2040,2045,2050,2100
+eu_tariff,EU-12,regional coffee,imported coffee,imported coffee_Deforest,EUDR,0.25,0.25,,,,,,
+eu_tariff,EU-15,regional coffee,imported coffee,imported coffee_Deforest,EUDR,0.25,0.25,,,,,,

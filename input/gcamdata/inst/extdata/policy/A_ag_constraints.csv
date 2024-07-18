@@ -1,0 +1,14 @@
+# File: A_ag_constraints.csv
+# Title: Policy floors/ceilings for ag tax/subsidy policies
+# Comments: Empty
+# Units: Mt
+# Column types: cccccnnnnnnnnnnnnnnnnn
+# ----------
+xml,market,policy.portfolio.standard,policyType,tech_mapping,2020,2025,2030,2035,2040,2045,2050,2055,2060,2065,2070,2075,2080,2085,2090,2095,2100
+soft_calib_2020,World,palmoil-constraint,subsidy,PALMOIL_CONSUME,415.9494649,,,,,,,,,,,,,,,,
+soft_calib_2020,World,cocoa-constraint,subsidy,COCOA_CONSUME,5.636225747,,,,,,,,,,,,,,,,
+soft_calib_2020,World,coffee-constraint,subsidy,COFFEE_CONSUME,10.69837195,,,,,,,,,,,,,,,,
+soft_calib_2020,World,rubber-constraint,subsidy,RUBBER_CONSUME,14.44565378,,,,,,,,,,,,,,,,
+soft_calib_2020,World,soybean-constraint,tax,SOYBEAN_CONSUME,354.886651,,,,,,,,,,,,,,,,
+soft_calib_2020,World,forest-constraint,tax,FOREST_CONSUME,3.94670997,,,,,,,,,,,,,,,,
+soft_calib_2020,World,beef-constraint,tax,BEEF_CONSUME,84.42025996,,,,,,,,,,,,,,,,
